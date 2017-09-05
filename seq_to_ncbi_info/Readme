@@ -1,0 +1,8 @@
+hoe start je dit ??
+gebruik python3 in terminal.
+
+het command:
+
+python3 seq_to_ncbi_entry_gen_id.py  seq_a3.fa GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa all_seq_info
+
+eerst het .p dan de seq van ons , dan het faa met protiens. dan als laatste de folder voor de output per seq
