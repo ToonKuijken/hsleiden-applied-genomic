@@ -18,6 +18,8 @@ Annotatie van functie en pathway."""""
 #output_folder = 'sequence_info'
 
 def info_protien_en_meer(protien_list, output_folder):
+    """
+    """
     for protien_info in protien_list:
         name = protien_info[1][1]
         All_seq_info = []
@@ -121,9 +123,10 @@ def blast_db_ncbi(input_file, db):
 
 
 def make_db(File):
-    """
+    """Deze funtie maakt een database van een bestand dat je mee geeft.
+    Door subprocess.check_output()kan er in bash een command worden gegeven en gekeken wat de uitkomst is voor debugging opties.
 
-    :param File:
+    :param File: Een betand met
     :return:
     """
     os.system("formatdb -i " + File + "  -p T")
@@ -145,6 +148,10 @@ def system_input():
 
 
 def main():
+    """De main functie die alle stappen uitvoerd.
+    Eerst worden de argumenten van de terminal opgevangen.
+    Daarna word er een db gemaatk van het protenoom file.
+    """
     input_seq, protenome_ncbi, output_folder = system_input()
     make_db(protenome_ncbi)
     best_ncbi_hits = blast_db_ncbi(input_seq, protenome_ncbi)
