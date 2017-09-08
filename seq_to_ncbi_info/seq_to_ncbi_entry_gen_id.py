@@ -5,11 +5,6 @@ import sys
 import  csv
 
 
-"""Een tabel met voor elk gen in jullie dataset : De ID, de naam, lengte/sequentie, eiwit(ten) gecodeerd op het gen.
-    Een tabel met voor elk eiwit in jullie dataset: De accession code, de naam,
-     lengte/aminozuursequentie. Informatie over splicing varianten.
-Annotatie van functie en pathway."""""
-
 #input_seq = 'seq_a3.fa'
 #proteome = "uniprot-proteome%3AUP000002279.fasta"
 #ncbi_koppel_db = "GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_rna.fna"
@@ -18,14 +13,20 @@ Annotatie van functie en pathway."""""
 #output_folder = 'sequence_info'
 
 def info_protien_en_meer(protien_list, output_folder):
-    """
+    """Deze funcite haald alle info op van af ncbi. Dit geberut door aan een bash script de naam van het protien te geven.
+    Dit word uitgevoeld door subprocess.call(). Het script geeft dan meerdere .txt bestande.
+    Deze worden dan gelezen en aan een lijst toegevoegd. Wanner dit gedaan is word alles in een bestand geschreven en de tijdeleken txt worden verwijdert.
+
+    :protien_list: lijst met alle sequenties met blasthits en ncbi codes.
+    :output_folder: Naam van een folder war de outpute moet komen.
     """
     for protien_info in protien_list:
         name = protien_info[1][1]
         All_seq_info = []
         All_seq_info.append(protien_info)
         print('bash getinfoandid.sh '+name + ' ' + output_folder)
-        subprocess.call('bash getinfoandid.sh '+name + ' ' + output_folder, shell=True)
+        subprocess.call('bash getinfoandid.sh '+name + ' ' + output_folder,
+                        shell=True)
         with open(name+".txt", 'r') as main_file:
             All_seq_info.append(str(main_file.readlines()))
             pass
@@ -40,7 +41,8 @@ def info_protien_en_meer(protien_list, output_folder):
                 print(info)
                 output_file.write(''.join(str(i) for i in info))
                 output_file.write('/n')
-        subprocess.call('rm '+ name+'.txt '+ name+'_gene.txt '+ name+'_mRNA.txt ', shell= True)
+        subprocess.call('rm '+ name+'.txt '+ name+'_gene.txt '+ name +
+                        '_mRNA.txt ', shell= True)
 
 
 def return_full_seq(name, protenome_ncbi):
