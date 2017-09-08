@@ -159,11 +159,6 @@ def main():
     best_ncbi_hits = blast_db_ncbi(input_seq, protenome_ncbi)
     gene_dictionary = make_dic_information_gene(best_ncbi_hits, protenome_ncbi)
     info_protien_en_meer(gene_dictionary, output_folder)
-    #with open(outpute_name, 'w+') as output:
-     #   for key in gene_dictionary:
-      #      print(key)
-       #     output.write(
-        #        'Orginial seq:' + key[0] + '\nHit:' + key[1][0] + 'ncbi id:' + key[1][1] + '\n' + key[1][3] + '\n')
 
 
 main()
