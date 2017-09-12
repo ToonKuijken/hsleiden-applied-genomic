@@ -13,7 +13,7 @@ Annotatie van functie en pathway."""""
 input_seq = 'seq_a3.fa'
 proteome = "uniprot-proteome%3AUP000002279.fasta"
 ncbi_koppel_db = "GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_rna.fna"
-protenome_ncbi = 'db_files_ncbi/GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa'
+protenome_ncbi = 'GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa'
 outpute_name = 'ncbi_protien_info.txt'
 output_folder = 'sequence_info_t'
 def get_pathway():
