@@ -5,44 +5,53 @@ import sys
 import  csv
 
 
-#input_seq = 'seq_a3.fa'
-#proteome = "uniprot-proteome%3AUP000002279.fasta"
-#ncbi_koppel_db = "GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_rna.fna"
-#protenome_ncbi = 'db_files_ncbi/GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa'
-#outpute_name = 'ncbi_protien_info.txt'
-#output_folder = 'sequence_info'
+"""Een tabel met voor elk gen in jullie dataset : De ID, de naam, lengte/sequentie, eiwit(ten) gecodeerd op het gen.
+    Een tabel met voor elk eiwit in jullie dataset: De accession code, de naam,
+     lengte/aminozuursequentie. Informatie over splicing varianten.
+Annotatie van functie en pathway."""""
 
-def info_protien_en_meer(protien_list, output_folder):
-    """Deze funcite haald alle info op van af ncbi. Dit geberut door aan een bash script de naam van het protien te geven.
-    Dit word uitgevoeld door subprocess.call(). Het script geeft dan meerdere .txt bestande.
-    Deze worden dan gelezen en aan een lijst toegevoegd. Wanner dit gedaan is word alles in een bestand geschreven en de tijdeleken txt worden verwijdert.
+input_seq = 'seq_a3.fa'
+proteome = "uniprot-proteome%3AUP000002279.fasta"
+ncbi_koppel_db = "GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_rna.fna"
+protenome_ncbi = 'db_files_ncbi/GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa'
+outpute_name = 'ncbi_protien_info.txt'
+output_folder = 'sequence_info_t'
+def get_pathway():
+    with open('pathway.txt', 'r') as file:
+        print(file.readlines())
+        a = file.readlines()
+        print(a)
 
-    :protien_list: lijst met alle sequenties met blasthits en ncbi codes.
-    :output_folder: Naam van een folder war de outpute moet komen.
-    """
+def info_protien_en_meer(protien_list):
+    lis = []
     for protien_info in protien_list:
+        print(protien_info)
         name = protien_info[1][1]
+        lis.append(name)
+        seq_name = str(protien_info[0])
+        print(seq_name)
+
+
         All_seq_info = []
         All_seq_info.append(protien_info)
-        print('bash getinfoandid.sh '+name + ' ' + output_folder)
-        subprocess.call('bash getinfoandid.sh '+name + ' ' + output_folder,
-                        shell=True)
-        with open(name+".txt", 'r') as main_file:
+        print('bash getinfoandid.sh '+name + ' ' + output_folder, seq_name)
+        subprocess.call('bash getinfoandid.sh '+name + ' ' + output_folder+ ' '+ seq_name, shell=True,  stderr=None)
+        with open(seq_name+".txt", 'r') as main_file:
             All_seq_info.append(str(main_file.readlines()))
-            pass
-        with open(name + "_gene.txt", 'r') as gene_file:
+
+        with open(seq_name + "_gene.txt", 'r') as gene_file:
             All_seq_info.append(str(gene_file.readlines()))
 
-        with open(name + "_mRNA.txt", 'r') as mRNA_file:
+        with open(seq_name + "_mRNA.txt", 'r') as mRNA_file:
             All_seq_info.append(str(mRNA_file.readlines()))
+        get_pathway()
 
-        with open(output_folder + '/'+ name+'.txt', 'w+') as output_file:
+        with open(output_folder + '/'+ seq_name+'.txt', 'w+') as output_file:
             for info in All_seq_info:
                 print(info)
                 output_file.write(''.join(str(i) for i in info))
                 output_file.write('/n')
-        subprocess.call('rm '+ name+'.txt '+ name+'_gene.txt '+ name +
-                        '_mRNA.txt ', shell= True)
+        subprocess.call('rm '+ seq_name+'.txt '+ seq_name+'_gene.txt '+ seq_name+'_mRNA.txt html.txt', shell= True)
 
 
 def return_full_seq(name, protenome_ncbi):
@@ -79,7 +88,7 @@ def make_dic_information_gene(hits_list, protenome_ncbi):
     return gene_dict
 
 
-def fasta_file_to_list(input_seq):
+def fasta_file_to_list(file):
     """ Loopt door een faste bestand door en maakt hier een lijst van.
     door dat een fasta niet alles wat je wilt op een lijn staat id er een if els nodig.
     Wanneer line begint met '>'  is dit de info van het fasta bestand. Deze line word dan
@@ -105,14 +114,14 @@ def fasta_file_to_list(input_seq):
     return list_of_seq
 
 
-def blast_db_ncbi(input_file, db):
+def blast_db_ncbi(input, db):
     """
 
     :param input:
     :param db:
     :return:
     """
-    seq_list = fasta_file_to_list(input_file)
+    seq_list = fasta_file_to_list(input)
     best_hits = []
     for seq in seq_list:
         tmp_seq_file = open('seq_tmp_file.fa', 'w+')
@@ -120,15 +129,17 @@ def blast_db_ncbi(input_file, db):
         best_hits.append(str(
             subprocess.check_output(["blastall -d " + db + " -i seq_tmp_file.fa -p blastx -m8 | head -n1"],
                                     shell=True), 'utf8'))
+        # print(str(
+        #     subprocess.check_output(["blastall -d " + db + " -i seq_tmp_file.fa -p blastx -m8 | head -n4"],
+        #                             shell=True), 'utf8'))
     best_hits.pop(0)
     return best_hits
 
 
 def make_db(File):
-    """Deze funtie maakt een database van een bestand dat je mee geeft.
-    Door subprocess.check_output()kan er in bash een command worden gegeven en gekeken wat de uitkomst is voor debugging opties.
+    """
 
-    :param File: Een betand met
+    :param File:
     :return:
     """
     os.system("formatdb -i " + File + "  -p T")
@@ -143,22 +154,24 @@ def system_input():
     :return: input_seq : serquentie van de dataset.
              protenome_ncbi: het bestand met het protenome van uit ncbi.
     """
-    input_seq = sys.argv[1]
-    protenome_ncbi = sys.argv[2]
-    output_folder = sys.argv[3]
+    input_seq = sys.argv[0]
+    protenome_ncbi = sys.argv[1]
+    output_folder = sys.argv[2]
     return input_seq, protenome_ncbi, output_folder
 
 
 def main():
-    """De main functie die alle stappen uitvoerd.
-    Eerst worden de argumenten van de terminal opgevangen.
-    Daarna word er een db gemaatk van het protenoom file.
-    """
-    input_seq, protenome_ncbi, output_folder = system_input()
+    #input_seq, protenome_ncbi, output_folder = system_input()
     make_db(protenome_ncbi)
     best_ncbi_hits = blast_db_ncbi(input_seq, protenome_ncbi)
     gene_dictionary = make_dic_information_gene(best_ncbi_hits, protenome_ncbi)
-    info_protien_en_meer(gene_dictionary, output_folder)
+    #print(gene_dictionary)
+    info_protien_en_meer(gene_dictionary)
+    # with open(outpute_name, 'w+') as output:
+    #     for key in gene_dictionary:
+    #         print(key)
+    #         output.write(
+    #             'Orginial seq:' + key[0] + '\nHit:' + key[1][0] + 'ncbi id:' + key[1][1] + '\n' + key[1][3] + '\n')
 
 
 main()
