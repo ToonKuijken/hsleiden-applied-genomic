@@ -15,43 +15,41 @@ proteome = "uniprot-proteome%3AUP000002279.fasta"
 ncbi_koppel_db = "GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_rna.fna"
 protenome_ncbi = 'GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa'
 outpute_name = 'ncbi_protien_info.txt'
-output_folder = 'sequence_info_t'
-def get_pathway():
-    with open('pathway.txt', 'r') as file:
-        print(file.readlines())
-        a = file.readlines()
-        print(a)
+output_folder = 'sequence_info'
+
+def sort_info(output_folder):
+    """hier alle funtie vppr eht soorteren en zo . dua om tabellen te maken en alle info uit de bestandent te halen.
+    """
+    subprocess.check_call('bash bash_info_seq.sh '+ output_folder, shell=True)
 
 def info_protien_en_meer(protien_list):
-    lis = []
+    """ hier word info van ncbi met bash gekregen. hierna
+    word allles in een betand gegooit. hier kan dus alles per seq uit gehaald worden.
+    """
     for protien_info in protien_list:
-        print(protien_info)
         name = protien_info[1][1]
         lis.append(name)
         seq_name = str(protien_info[0])
-        print(seq_name)
 
 
         All_seq_info = []
         All_seq_info.append(protien_info)
-        print('bash getinfoandid.sh '+name + ' ' + output_folder, seq_name)
         subprocess.call('bash getinfoandid.sh '+name + ' ' + output_folder+ ' '+ seq_name, shell=True,  stderr=None)
         with open(seq_name+".txt", 'r') as main_file:
-            All_seq_info.append(str(main_file.readlines()))
-
+            All_seq_info.append(main_file.readlines())
+            All_seq_info.append('\n')
         with open(seq_name + "_gene.txt", 'r') as gene_file:
-            All_seq_info.append(str(gene_file.readlines()))
-
+            All_seq_info.append(gene_file.readlines())
+            All_seq_info.append('\n')
         with open(seq_name + "_mRNA.txt", 'r') as mRNA_file:
-            All_seq_info.append(str(mRNA_file.readlines()))
-        get_pathway()
-
+            All_seq_info.append(mRNA_file.readlines())
+            All_seq_info.append('\n')
         with open(output_folder + '/'+ seq_name+'.txt', 'w+') as output_file:
             for info in All_seq_info:
-                print(info)
                 output_file.write(''.join(str(i) for i in info))
-                output_file.write('/n')
+                output_file.write('\n')
         subprocess.call('rm '+ seq_name+'.txt '+ seq_name+'_gene.txt '+ seq_name+'_mRNA.txt html.txt', shell= True)
+
 
 
 def return_full_seq(name, protenome_ncbi):
@@ -138,7 +136,6 @@ def blast_db_ncbi(input, db):
 
 def make_db(File):
     """
-
     :param File:
     :return:
     """
@@ -165,13 +162,8 @@ def main():
     make_db(protenome_ncbi)
     best_ncbi_hits = blast_db_ncbi(input_seq, protenome_ncbi)
     gene_dictionary = make_dic_information_gene(best_ncbi_hits, protenome_ncbi)
-    #print(gene_dictionary)
     info_protien_en_meer(gene_dictionary)
-    # with open(outpute_name, 'w+') as output:
-    #     for key in gene_dictionary:
-    #         print(key)
-    #         output.write(
-    #             'Orginial seq:' + key[0] + '\nHit:' + key[1][0] + 'ncbi id:' + key[1][1] + '\n' + key[1][3] + '\n')
+    sort_info(output_folder)
 
 
 main()

@@ -13,6 +13,7 @@ protenome_ncbi = 'GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa'
 outpute_name = 'ncbi_protien_info.txt'
 output_folder = 'sequence_info'
 en comment:
+input_seq, protenome_ncbi, output_folder = system_input()
 
 
 eerst het .p dan de seq van ons , dan het faa met protiens. dan als laatste de folder voor de output per seq

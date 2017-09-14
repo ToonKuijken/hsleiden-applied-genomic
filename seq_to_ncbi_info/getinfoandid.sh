@@ -27,4 +27,5 @@ echo "tree"
 
 wget 'http://www.genome.jp/dbget-bin/www_bget?oaa:'$gene_id -O html.txt
 cat html.txt | grep pathway | sed 's/\/kegg-bin\/show_pathway\?/ZZ/g' >> pathway.txt
+echo \n >> pathway.txt
 echo 'done'
