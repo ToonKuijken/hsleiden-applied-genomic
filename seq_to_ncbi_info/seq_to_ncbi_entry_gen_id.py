@@ -3,6 +3,7 @@ import subprocess
 import math
 import sys
 import  csv
+from bioservices import KEGG
 
 
 """Een tabel met voor elk gen in jullie dataset : De ID, de naam, lengte/sequentie, eiwit(ten) gecodeerd op het gen.
@@ -17,10 +18,20 @@ protenome_ncbi = 'GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa'
 outpute_name = 'ncbi_protien_info.txt'
 output_folder = 'sequence_info'
 
+
 def sort_info(output_folder):
     """hier alle funtie vppr eht soorteren en zo . dua om tabellen te maken en alle info uit de bestandent te halen.
     """
     subprocess.check_call('bash bash_info_seq.sh '+ output_folder, shell=True)
+
+
+def pathway_info(gene_name, seq_name ):
+    name = gene_name
+    keggapi = KEGG()
+    gene_info = keggapi.get('oaa:'+name)
+    subprocess.call("echo  '"+str(gene_info) +'\n'+ "'>>"+output_folder+"/"+seq_name +
+                    ".txt", shell=True)
+
 
 def info_protien_en_meer(protien_list):
     """ hier word info van ncbi met bash gekregen. hierna
@@ -28,13 +39,12 @@ def info_protien_en_meer(protien_list):
     """
     for protien_info in protien_list:
         name = protien_info[1][1]
-        lis.append(name)
         seq_name = str(protien_info[0])
-
 
         All_seq_info = []
         All_seq_info.append(protien_info)
-        subprocess.call('bash getinfoandid.sh '+name + ' ' + output_folder+ ' '+ seq_name, shell=True,  stderr=None)
+        run = str(subprocess.check_output('bash getinfoandid.sh '+name + ' ' + output_folder+ ' '+ seq_name, shell=True,  stderr=None), 'utf8')
+        print(run)
         with open(seq_name+".txt", 'r') as main_file:
             All_seq_info.append(main_file.readlines())
             All_seq_info.append('\n')
@@ -48,6 +58,7 @@ def info_protien_en_meer(protien_list):
             for info in All_seq_info:
                 output_file.write(''.join(str(i) for i in info))
                 output_file.write('\n')
+        pathway_info(str(subprocess.check_output("cat " +output_folder+ '/'+ seq_name+ ".txt | grep '\<Gene-track_geneid\>' |tr '<' '  ' |tr '>' ' ' | awk '{print $2}'", shell=True) ,'utf8'), seq_name)
         subprocess.call('rm '+ seq_name+'.txt '+ seq_name+'_gene.txt '+ seq_name+'_mRNA.txt html.txt', shell= True)
 
 
@@ -101,7 +112,6 @@ def fasta_file_to_list(file):
     list_of_seq = []
     with open(input_seq, 'r') as file:
         tmp_string = ''
-
         for i in file.readlines():
             if i[0] == '>':
                 tmp_string += i
@@ -127,9 +137,6 @@ def blast_db_ncbi(input, db):
         best_hits.append(str(
             subprocess.check_output(["blastall -d " + db + " -i seq_tmp_file.fa -p blastx -m8 | head -n1"],
                                     shell=True), 'utf8'))
-        # print(str(
-        #     subprocess.check_output(["blastall -d " + db + " -i seq_tmp_file.fa -p blastx -m8 | head -n4"],
-        #                             shell=True), 'utf8'))
     best_hits.pop(0)
     return best_hits
 
@@ -140,7 +147,6 @@ def make_db(File):
     :return:
     """
     os.system("formatdb -i " + File + "  -p T")
-    print(subprocess.check_output('ls', shell=True))
 
 
 def system_input():
@@ -167,3 +173,4 @@ def main():
 
 
 main()
+
