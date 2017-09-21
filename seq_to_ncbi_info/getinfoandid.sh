@@ -3,7 +3,7 @@ GENE_NAME=$1
 SEQ_NAME=$3
 
 folder=$2
-if [  -d $2  ]
+if [  -d $folder  ]
 then
     echo ''
 else

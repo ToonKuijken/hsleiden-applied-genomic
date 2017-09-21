@@ -17,15 +17,9 @@ else:
 
 
 # haal weg
-input_seq = 'seq_a3.fa'
-proteome = "uniprot-proteome%3AUP000002279.fasta"
-ncbi_koppel_db = "GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_rna.fna"
-protenome_ncbi = 'GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa'
-outpute_name = 'ncbi_protien_info.txt'
-output_folder = 'sequence_info'
 
 
-def pathway_info(gene_name, seq_name):
+def pathway_info(gene_name, seq_name ,output_folder):
     """ Deze functie maakt gebruikt van de bioservices modulen.
     Als deze geinstalerd is owrd er voor het gen alle gegeven uit kegg opgehaald.
     dit word dan met bash naar het bestand van de sequentie geschreven.
@@ -50,7 +44,7 @@ def sort_information(output_folder):
     een bestand met alle eiwitcodens. en een beestand met een lijst van genen.
     """
     subprocess.call('bash bash_info_seq.sh ' + output_folder, shell=True)
-    subprocess.call("cat hits_info.txt | awk '{ print $3 ,  substr($0,"
+    subprocess.call("cat info_seq.txt | awk '{ print $3 ,  substr($0,"
                     " index($0,$4))}' > 'eiwitcodes.txt'", shell=True)
     subprocess.call("bash list_of_genes.sh " + output_folder, shell=True)
 
@@ -71,7 +65,7 @@ def compress_files(cf_data_list, cf_folder, cf_seq):
                     cf_seq + '_mRNA.txt ', shell=True)
 
 
-def get_online_info(goi_eiwit_lijst):
+def get_online_info(goi_eiwit_lijst,goi_output_folder):
     """ hier word info van ncbi met bash gekregen. hierna
     word allles in een betand geplaats. hier kan dus alles per seq uit
     gehaald worden. Eerst word er door de lijst met info die er is heen
@@ -89,7 +83,7 @@ def get_online_info(goi_eiwit_lijst):
         All_seq_info = []
         All_seq_info.append(protien_info)
         run = subprocess.check_output('bash getinfoandid.sh ' + name + ' ' +
-                                      output_folder + ' ' + seq_name,
+                                      goi_output_folder + ' ' + seq_name,
                                       shell=True, stderr=None)
         with open(seq_name + ".txt", 'r') as main_file, \
                 open(seq_name + "_gene.txt", 'r') as gene_file, open(
@@ -101,11 +95,11 @@ def get_online_info(goi_eiwit_lijst):
             All_seq_info.append(mRNA_file.readlines())
             All_seq_info.append('\n')
 
-        compress_files(All_seq_info, output_folder, seq_name)
-        pathway_info(str(subprocess.check_output("cat " + output_folder + '/' +
+        compress_files(All_seq_info, goi_output_folder, seq_name)
+        pathway_info(str(subprocess.check_output("cat " + goi_output_folder + '/' +
                                                  seq_name + ".txt | grep '\<Gene-track_geneid\>' |tr '<'"
                                                             " '  ' |tr '>' ' ' | awk '{print $2}'",
-                                                 shell=True), 'utf8'), seq_name)
+                                                 shell=True), 'utf8'), seq_name, goi_output_folder)
 
 
 def return_full_seq(rfs_naam, rfs_protenome_ncbi):
@@ -222,15 +216,17 @@ def make_db(md_file):
 
 
 def system_input():
-    """Deze funcite vangt alle variable op van de terminal als python hier in gedraaid word.
-    Dit gebeurt mer sys.arg. deze variabler zijn dan strings. en worden geretuned.
+    """Deze funcite vangt alle variable op van de terminal als python hier in ge
+    draaid word. Dit gebeurt mer sys.arg. deze variabler zijn dan strings. en
+     worden geretuned.
 
     :return: si_input_seq : serquentie van de dataset.
              si_protenome_ncbi: het bestand met het protenome van uit ncbi.
     """
-    si_input_seq = sys.argv[0]
-    si_protenome_ncbi = sys.argv[1]
-    si_output_folder = sys.argv[2]
+    si_input_seq = sys.argv[1]
+    si_protenome_ncbi = sys.argv[2]
+    si_output_folder = sys.argv[3]
+    print(si_input_seq, si_protenome_ncbi, si_output_folder)
     return si_input_seq, si_protenome_ncbi, si_output_folder
 
 
@@ -243,15 +239,17 @@ def main():
 
     :return:
     """
-    # input_seq, protenome_ncbi, output_folder = system_input()
+    input_seq, protenome_ncbi, output_folder = system_input()
+    print(input_seq, protenome_ncbi, output_folder)
     make_db(protenome_ncbi)
     print('db done')
     best_ncbi_hits = blast_db_ncbi(input_seq, protenome_ncbi)
     print('blast done')
     gene_dictionary = make_dic_information_gene(best_ncbi_hits, protenome_ncbi)
-    get_online_info(gene_dictionary)
+    get_online_info(gene_dictionary, output_folder)
     sort_information(output_folder)
-    print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\neiwitcodes.txt\n\nFolders:\n{}".format(output_folder))
+    print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\
+          \neiwitcodes.txt\n\nFolders:\n{}".format(output_folder))
 
 
 # ToDO
