@@ -13,20 +13,26 @@ if spam_loader is not None:
     FULL_SUPPORT = True
 else:
     FULL_SUPPORT = False
+
+
 # mag dit ?
 
 
 # haal weg
 
 
-def pathway_info(gene_name, seq_name ,output_folder):
-    """ Deze functie maakt gebruikt van de bioservices modulen.
-    Als deze geinstalerd is owrd er voor het gen alle gegeven uit kegg opgehaald.
-    dit word dan met bash naar het bestand van de sequentie geschreven.
+def pathway_info(gene_name, seq_name, output_folder):
+    """ Deze functie maakt gebruik van de bioservices modulen.
 
-    :param gene_name:  naam van het gen
-    :param seq_name: de naam van de orginale seq
-    """
+   Als deze geïnstalleerd is worden alle gegevens van het gen uit de KEGG database opgehaald.
+
+   Dit wordt door middel van Bash naar het bestand van de sequentie geschreven.
+
+   :param gene_name: naam van het gen
+
+   :param seq_name: de naam van de originele sequentie
+
+   """
     # is module installed ??
     if FULL_SUPPORT is True:
         name = gene_name
@@ -39,11 +45,11 @@ def pathway_info(gene_name, seq_name ,output_folder):
 
 
 def sort_information(output_folder):
-    """hier alle funtie vppr eht soorteren en zo . dus om tabellen te maken en alle info uit de bestandent te halen.
-    nu worden er 3 bestand gemaakt. een debug/ alles bestand met alle huidige info.
-    een bestand met alle eiwitcodens. en een beestand met een lijst van genen.
-    """
+    """Dit is de functie voor het sorteren van alle gegevens uit de bestanden, hier worden dus alle tabellen gemaakt.
 
+   22-9-2017: Er worden nu 3 bestanden aangemaakt: een debug/ alles bestand met alle huidige info, een bestand met een lijst van gencodes en -namen en een bestand met een lijst van eiwitcodes en -namen.
+
+   """
 
     subprocess.call('bash bash_info_seq.sh ' + output_folder, shell=True)
     subprocess.call("cat info_seq.txt | awk '{ print $3 ,  substr($0,"
@@ -68,18 +74,27 @@ def compress_files(cf_data_list, cf_folder, cf_seq):
                     cf_seq + '_mRNA.txt ', shell=True)
 
 
-def get_online_info(goi_eiwit_lijst,goi_output_folder):
-    """ hier word info van ncbi met bash gekregen. hierna
-    word allles in een betand geplaats. hier kan dus alles per seq uit
-    gehaald worden. Eerst word er door de lijst met info die er is heen
-    gelopen en word de naam er uit gehaald. Daarna word er in het bash
-    script getinfoandid.sh met wget info verkreagen en in 3 bestanden
-    gegooid. deze bestanen worden dan geopen en alle info word in een
-    een lijst gezet. NU word er in de funtie compress_files() de lijst
-    mee gegeven. Dan word er nog met de funtie pathway_info de info
-    opgehaald uit kegg.
+def get_online_info(goi_eiwit_lijst, goi_output_folder):
+    """In deze functie wordt informatie van de NCBI database verkregen door middel van Bash.
 
-    """
+   Vervolgens wordt alles per sequentie in een bestand geplaatst en kan er dus per sequentie informatie uit
+
+   gehaald worden. Er wordt door de lijst met informatie die er is heen
+
+   gelopen om zo de naam er uit te halen. Daarna wordt er in het Bash
+
+   script getinfoandid.sh met wget informatie verkregen en vervolgens wordt dit in 3 bestanden gezet.
+
+   Deze bestanden worden dan weer geopend en om alle informatie in een
+
+   lijst te zetten. De lijst wordt meegegeven aan de functie compress_files()
+
+   . Tenslotte wordt er met de functie pathway_info de informatie
+
+   opgehaald uit KEGG.
+
+   """
+
     for protien_info in goi_eiwit_lijst:
         name = protien_info[1][1]
         seq_name = str(protien_info[0])
@@ -106,20 +121,29 @@ def get_online_info(goi_eiwit_lijst,goi_output_folder):
 
 
 def return_full_seq(rfs_naam, rfs_protenome_ncbi):
-    """ Deze functie haald de hele serquintie uit het bestand met
-     protenoom .Eerst word  er met bash de index van het eiwit
-    opgehaald. Daarna word het betand geopen van het protenoom en word
-    er van af de index van het gen geloopt. Deze loop loopt door tot
-    dat er een nieuwe serquentie gevonden word omdat bekend is dat elke
-    serquentie begint met > in fasta formaat. Wanneer het begin van de
-    line dus met > bewgint word de serquentie gereturned.
+    """Deze functie haalt de hele sequentie uit het bestand rfs_protenome_ncbi.txt waar het
 
-    :param rfs_naam: string: De naam van het eiwit wat gevonden is en
-                             de serquentie nodig is.
-    :param rfs_protenome_ncbi: bestand: Fasta bestand met protenoom er
-                               in.
-    :return: str: sequentie van het eiwit wat gevraagd word.
-    """
+   protenoom instaat. Eerst wordt er gebruikmakend van Bash de index van het eiwit
+
+   opgehaald. Daarna wordt het bestand geopend en wordt
+
+   er vanaf de index van het gen heen gelopen tot
+
+   dat er een nieuwe sequentie gevonden wordt, dit kan omdat bekend is dat elke
+
+   sequentie begint met > in FASTA formaat. Wanneer een regel begint met >
+
+   wordt de sequentie gereturned.
+
+   :param rfs_naam: string: De naam van het eiwit wat gevonden is en
+
+   de sequentie die nodig is.
+
+   :param rfs_protenome_ncbi: bestand: FASTA bestand met proteoom erin.
+
+   :return: str: sequentie van het eiwit wat gevraagd wordt.
+
+   """
     all_protiens = []
     hit_protien_info = str(subprocess.check_output('egrep ' + rfs_naam + ' ' +
                                                    rfs_protenome_ncbi + '  -n',
@@ -136,13 +160,16 @@ def return_full_seq(rfs_naam, rfs_protenome_ncbi):
                 return gen_seq_and_info
 
 
-def make_dic_information_gene(hits_list, protenome_ncbi):
+def make_dic_information_gene(hits_list, protenome_ncbi):   #TODO
     """Dict layout : key = name seq.| full hit, naam ncbi protien,
-     leng, volle serquentie, info van ncbi wget stuff
 
-    :param hits_list:
-    :return:
-    """
+   leng, volle sequentie, informatie van ncbi wget stuff
+
+   :param hits_list:
+
+   :return:
+
+   """
     gene_dict = []
     for hit in hits_list:
         gene_dict.append([hit.split('\t')[0],
@@ -153,17 +180,25 @@ def make_dic_information_gene(hits_list, protenome_ncbi):
 
 
 def fasta_file_to_list(ffl_file):
-    """ Loopt door een faste bestand door en maakt hier een lijst van.
-    door dat een fasta niet alles wat je wilt op een lijn staat id er een if els nodig.
-    Wanneer line begint met '>'  is dit de info van het fasta bestand. Deze line word dan
-    toegevoegd aan een tijdelijke string.
-    Dan gaat de loop veder door de lijst van het bestand tot er iets anders tegen komt dat
-     niet met '>'begint. nu word de tijdelijke string toegevoegd aan een lijst met alle serquenteies en word de var leeggemaakt.
-    wanneer er door het hele bestand gelopen is word de lijst met fasta terug gegeven.
+    """Loopt door een FASTA bestand heen en maakt hier een lijst van.
 
-    :param ffl_file: Bestand : een bestand in fasta formaat waar serquenties in staan.
-    :return: lijst: Hier zitten alle serquenties in met de naam.
-    """
+   Doordat een FASTA bestand alles achter elkaar neerzet is er een if/els statement nodig.
+
+   Wanneer de regel begint met '>' verwijst dit naar het FASTA formaat. Deze regel wordt dan
+
+   toegevoegd aan een tijdelijke string.
+
+   Dan gaat de loop verder door de lijst van het bestand en elke keer als hij iets anders tegen komt dat
+
+   niet met '>' begint wordt dit aan de tijdelijke string toegevoegd. Vervolgens wordt dit weer toegevoegd aan een lijst met alle sequenties en wordt de variabele leeggemaakt.
+
+   Wanneer er door het hele bestand gelopen is wordt de lijst met gesorteerde FASTA gegevens terug gegeven.
+
+   :param ffl_file: Bestand : een bestand in FASTA formaat waar sequenties in staan.
+
+   :return: lijst: Hier zitten alle sequenties in met de bijbehorende naam.
+
+   """
     ffl_list_of_seq = []
     with open(ffl_file, 'r') as ffl_local_file:
         temp_string = ''
@@ -178,23 +213,35 @@ def fasta_file_to_list(ffl_file):
 
 
 def blast_db_ncbi(bdn_input, bdn_db):
-    """Hier worden alle sequenties geblast tegen de gemaakte db.
-    eerst word er met de funftie fasta_file_to_list() en lijst met
-    sequenties gemaakt in fasta formaat. Door deze lisjt word dan heen
-    gelopen en steeds een betand gemaakt met de serquentie er in.
-    wanneer. met dit bestand word dan geblast met subpocess.
-    check_output(). dan word de beste hit met head -n1 gepakt. de
-     output word dan gestring in utf8 formaat. hierna word het aan een
-    lijst toegevoegd en word de lijst terug gegeven aan de main functie
-    .
+    """Hier worden alle sequenties geBLAST tegen de gemaakte database.
 
-    :param Betand : bdn_input: Het bestand met de sequenties die
-                    geblast worden.
+   eerst word er met de funftie fasta_file_to_list() en lijst met
 
-    :param Bestand: bdn_db:De naam van het fasta bestan waar een db van
-                    is gemaakt.
-    :return:
-    """
+   sequenties gemaakt in fasta formaat. Door deze lisjt word dan heen
+
+   gelopen en steeds een betand gemaakt met de serquentie er in.
+
+   wanneer. met dit bestand word dan geblast met subpocess.
+
+   check_output(). dan word de beste hit met head -n1 gepakt. de
+
+   output word dan gestring in utf8 formaat. hierna word het aan een
+
+   lijst toegevoegd en word de lijst terug gegeven aan de main functie
+
+   .
+
+   :param Betand : bdn_input: Het bestand met de sequenties die
+
+   geblast worden.
+
+   :param Bestand: bdn_db:De naam van het fasta bestan waar een db van
+
+   is gemaakt.
+
+   :return:
+
+   """
     bdn_seq_list = fasta_file_to_list(bdn_input)
     bdn_best_hits = []
     for seq in bdn_seq_list:
@@ -210,22 +257,22 @@ def blast_db_ncbi(bdn_input, bdn_db):
 
 
 def make_db(md_file):
-    """functie make_db maakt een db bestand met bash van een aangegeven  bestand.
-    Dit gebreurt via os.System(). De functie heeft verder geen return of output.
+    """De functie make_db maakt een database bestand van een meegegeven bestand door middel van Bash.
+   Dit gebreurd via os.System(). De functie heeft verder geen return of output.
+   :param md_file: een proteoom bestand in FASTA formaat.
+   """
 
-    :param md_file: een protenome bestand in fasta format.
-    """
     os.system("formatdb -i " + md_file + "  -p T")
 
 
 def system_input():
-    """Deze funcite vangt alle variable op van de terminal als python hier in ge
-    draaid word. Dit gebeurt mer sys.arg. deze variabler zijn dan strings. en
-     worden geretuned.
+    """Deze functie vangt alle variabelen op van de terminal als python hier in ge\
+   draaid wordt. Dit gebeurt met sys.arg, deze variabelen worden opgeslagen als een strings en
+   worden gereturned.
+   :return: si_input_seq : sequentie van de dataset.
+   si_protenome_ncbi: het bestand met het proteoom vanuit NCBI.
+   """
 
-    :return: si_input_seq : serquentie van de dataset.
-             si_protenome_ncbi: het bestand met het protenome van uit ncbi.
-    """
     si_input_seq = sys.argv[1]
     si_protenome_ncbi = sys.argv[2]
     si_output_folder = sys.argv[3]
@@ -234,27 +281,26 @@ def system_input():
 
 
 def main():
-    """De main funtie voor het programa. Stap voor stap worden de funtie uitgevoerd in de volgorde zodat de input ouput steed klopy.
-    Eerst worden de parameters van uit de teminal opgevangen en daarna word er een dn gemaakt van het protenoom uit ncbi.
-    wanneer er een dn is gemaakt kan de blast worden gedaan met de sequentie van de bioserver.
+    """Dit is de main functie voor het programma. Stap voor stap worden de verschillende functies uitgevoerd in de volgorde zodat de input en ouput steeds klopt.
+   Eerst worden de parameters van uit de terminal opgevangen en daarna wordt er een dn gemaakt van het proteoom uit NCBI.
+   Wanneer er een db is gemaakt kan de blast worden gedaan met de sequentie verkregen uit de BioServer.
+
+   :return:
+
+   """
 
 
-
-    :return:
-    """
-    input_seq, protenome_ncbi, output_folder = system_input()
-    print(input_seq, protenome_ncbi, output_folder)
-    make_db(protenome_ncbi)
-    print('db done')
-    best_ncbi_hits = blast_db_ncbi(input_seq, protenome_ncbi)
-    print('blast done')
-    gene_dictionary = make_dic_information_gene(best_ncbi_hits, protenome_ncbi)
-    get_online_info(gene_dictionary, output_folder)
-    sort_information(output_folder)
-    print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\
-          \neiwitcodes.txt\n\nFolders:\n{}".format(output_folder))
-
-
-# ToDO
+input_seq, protenome_ncbi, output_folder = system_input()
+print(input_seq, protenome_ncbi, output_folder)
+make_db(protenome_ncbi)
+print('db done')
+best_ncbi_hits = blast_db_ncbi(input_seq, protenome_ncbi)
+print('blast done')
+gene_dictionary = make_dic_information_gene(best_ncbi_hits, protenome_ncbi)
+get_online_info(gene_dictionary, output_folder)
+sort_information(output_folder)
+print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\
+          \neiwitcodes.txt\n\nFolders:\n{}".format(output_folder))  # ToDO
 
 main()
+
