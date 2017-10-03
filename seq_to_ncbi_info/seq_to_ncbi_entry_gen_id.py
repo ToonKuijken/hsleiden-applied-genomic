@@ -43,6 +43,8 @@ def sort_information(output_folder):
     nu worden er 3 bestand gemaakt. een debug/ alles bestand met alle huidige info.
     een bestand met alle eiwitcodens. en een beestand met een lijst van genen.
     """
+
+
     subprocess.call('bash bash_info_seq.sh ' + output_folder, shell=True)
     subprocess.call("cat info_seq.txt | awk '{ print $3 ,  substr($0,"
                     " index($0,$4))}' > 'eiwitcodes.txt'", shell=True)
@@ -51,6 +53,7 @@ def sort_information(output_folder):
 
 def compress_files(cf_data_list, cf_folder, cf_seq):
     """
+
 
     :param cf_data_list:
     :param cf_folder:
