@@ -3,6 +3,7 @@ import os
 import subprocess
 import importlib
 import sys
+from importlib.util import _find_spec
 
 """Support check """
 spam_loader = importlib.find_loader('bioservices')
@@ -44,14 +45,15 @@ def pathway_info(gene_name, seq_name, output_folder):
         pass
 
 
-def sort_information(output_folder):
+
+def sort_information(output_folder,input_seq):
     """Dit is de functie voor het sorteren van alle gegevens uit de bestanden, hier worden dus alle tabellen gemaakt.
 
    22-9-2017: Er worden nu 3 bestanden aangemaakt: een debug/ alles bestand met alle huidige info, een bestand met een lijst van gencodes en -namen en een bestand met een lijst van eiwitcodes en -namen.
 
    """
 
-    subprocess.call('bash bash_info_seq.sh ' + output_folder, shell=True)
+    subprocess.call('bash bash_info_seq.sh ' + output_folder+' ' +input_seq, shell=True)
     subprocess.call("cat info_seq.txt | awk '{ print $3 ,  substr($0,"
                     " index($0,$4))}' > 'eiwitcodes.txt'", shell=True)
     subprocess.call("bash list_of_genes.sh " + output_folder, shell=True)
@@ -285,7 +287,6 @@ def main():
    Eerst worden de parameters van uit de terminal opgevangen en daarna wordt er een dn gemaakt van het proteoom uit NCBI.
    Wanneer er een db is gemaakt kan de blast worden gedaan met de sequentie verkregen uit de BioServer.
 
-   :return:
 
    """
 
@@ -298,9 +299,8 @@ best_ncbi_hits = blast_db_ncbi(input_seq, protenome_ncbi)
 print('blast done')
 gene_dictionary = make_dic_information_gene(best_ncbi_hits, protenome_ncbi)
 get_online_info(gene_dictionary, output_folder)
-sort_information(output_folder)
+sort_information(output_folder,input_seq)
 print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\
           \neiwitcodes.txt\n\nFolders:\n{}".format(output_folder))  # ToDO
 
 main()
-
