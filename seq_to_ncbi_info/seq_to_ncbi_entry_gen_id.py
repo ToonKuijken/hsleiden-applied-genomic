@@ -6,7 +6,7 @@ import sys
 import importlib
 
 """Support check """
-spam_loader = importlib('bioservices')
+spam_loader = importlib.find_loader('bioservices')
 if spam_loader is not None:
     import bioservices
 
