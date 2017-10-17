@@ -48,7 +48,9 @@ def sort_information(output_folder):
    param: output_file: De folder waar alles in word geschreven. (str)
    """
 
-    subprocess.call('bash bash_info_seq.sh ' + output_folder, shell=True)
+    run = subprocess.check_output('bash getinfoandid.sh ' + name + ' ' +
+                                      goi_output_folder + ' ' + seq_name,
+                                      shell=True, stderr=None)
     subprocess.call("cat info_seq.txt | awk '{ print $3 ,  substr($0,"
                     " index($0,$4))}' > 'eiwitcodes.txt'", shell=True)
     subprocess.call("bash list_of_genes.sh " + output_folder, shell=True)
