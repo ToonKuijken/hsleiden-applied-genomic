@@ -3,7 +3,7 @@ import os
 import subprocess
 import importlib
 import sys
-from importlib.util import _find_spec
+import importlib
 
 """Support check """
 spam_loader = importlib('bioservices')
