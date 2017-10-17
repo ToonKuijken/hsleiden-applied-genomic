@@ -143,16 +143,19 @@ do
     wget 'https://www.ncbi.nlm.nih.gov/gene/?term=LOC'$NAME_GENE'&report=gene_table&format=text' -O intro.txt
     cat intro.txt  >> gene_introextro.txt
     cat intro.txt >> $VAR
-
+    echo start
 # info voor alles in gene gen tabel
     gene_tabels $VAR
     descript=$(cat $VAR | grep seq_ | sed 's/XP/\xx XP/g' | sed 's/\\n/ xx /g'| awk  -F xx '{print $5}'| sed -e 's/'$NAME_protein' //g'|  tr ' ' '_')
     protien_tabels $VAR $NAME_protein $descript
     pathways $VAR
     mrna $VAR
+    echo help
     org_sequentie $VAR
+    echo doioneee
 done
 
 rm intro.txt
+echo done
 
 #### run functions

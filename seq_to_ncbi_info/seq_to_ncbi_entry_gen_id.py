@@ -36,7 +36,7 @@ def pathway_info(gene_name, seq_name, output_folder):
         pass
 
 
-def sort_information(output_folder):
+def sort_information(output_folder,input_seq ):
     """Dit is de functie voor het sorteren van alle gegevens uit de bestanden,
      hier worden dus alle tabellen gemaakt.
    Er worden nu bestanden aangemaakt: een debug bestand met alles.
@@ -48,9 +48,7 @@ def sort_information(output_folder):
    param: output_file: De folder waar alles in word geschreven. (str)
    """
 
-    run = subprocess.check_output('bash getinfoandid.sh ' + name + ' ' +
-                                      goi_output_folder + ' ' + seq_name,
-                                      shell=True, stderr=None)
+    subprocess.call('bash bash_info_seq.sh ' + output_folder+ ' '+ input_seq, shell=True)
     subprocess.call("cat info_seq.txt | awk '{ print $3 ,  substr($0,"
                     " index($0,$4))}' > 'eiwitcodes.txt'", shell=True)
     subprocess.call("bash list_of_genes.sh " + output_folder, shell=True)
@@ -267,12 +265,9 @@ def main():
     print('blast done')
     gene_lijst = make_lijst_information_gene(best_ncbi_hits, protenome_ncbi)
     get_online_info(gene_lijst, output_folder)
-    sort_information(output_folder)
+    sort_information(output_folder, input_seq)
     print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\
               \neiwitcodes.txt\nncbi_table.txt\neiwit_tabel.txt\nmrna_table.txt\
               \norg_table.txt\n\nFolders:\n{}".format(output_folder))
 
 main()
-
-
-
