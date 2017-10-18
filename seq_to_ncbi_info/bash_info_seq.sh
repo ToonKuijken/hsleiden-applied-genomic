@@ -29,9 +29,7 @@ function gene_loc {
 function org_seq {
     begin=$(cat $1 | grep 'NTSEQ ' -n | awk -F":" '{print $1}')
     eind=$(cat $1 | grep /// -n | awk -F":" '{print $1}')
-    echo debug data: $eind $begin
     lengte=$((eind - begin))
-    echo did it work ?	
 
     seq=$(cat $1 |egrep 'NTSEQ' -n$lengte | tail -n$(($lengte)) | head -$(($lengte-1)) | tr -d [0-9]| tr -d - | tr -d ' '| tr -d '\n')
     printf \\t$seq>>ncbi_table.txt
@@ -39,7 +37,6 @@ function org_seq {
 
 function gene_tabels {
     VAR=$1
-    #echo $ncbi_table_name
     ncbi_table_name=$(cat $VAR | egrep 'value>GeneID' | uniq | sed 's/D:/D: /g' | sed 's/<\// <\//' | awk '{print $2}' )
     printf $ncbi_table_name>>ncbi_table.txt
 
@@ -81,11 +78,9 @@ function protien_tabels {
     else
          EC='NONE'
     fi
-     #echo $EC
     lengte=$(cat $VAR | egrep 'AASEQ' | awk '{print $2}')
     seq=$(cat $VAR|egrep '<GBSeq_sequence>' | awk 'NR==1{print $1}' | sed 's/</ </g' | sed 's/>/> /g' | awk '{print $2}')
-
-    printf $NAME_protein\\t$discript\\t$EC\\t$lengte\\t$seq\\n>>eiwit_tabel.txt
+    echo -e $NAME_protein\\t$discript\\t$EC\\t$lengte\\t$seq>>eiwit_tabel.txt
 }
 
 function pathways {
@@ -101,7 +96,6 @@ function pathways {
         else
             end=$(cat $1 | grep BRITE -n | awk -F":" '{print $1}')
         fi
-	echo does it wordk
         lengte=$(( end - begin ))
 
         echo -e $name'\t'$(cat $1 |egrep 'PATHWAY' -n$lengte| tail -n$(($lengte+1)) | head -n$lengte | sed 's/oaa/ZZ oaa/g' | awk  -F 'ZZ ' '{print $2 "\\t"}')>>pathway_table.txt
@@ -146,17 +140,22 @@ do
     cat intro.txt  >> gene_introextro.txt
     cat intro.txt >> $VAR
     echo start
-# info voor alles in gene gen tabel
+    # info voor alles in gene gen tabel
     gene_tabels $VAR
     descript=$(cat $VAR | grep seq_ | sed 's/XP/\xx XP/g' | sed 's/\\n/ xx /g'| awk  -F xx '{print $5}'| sed -e 's/'$NAME_protein' //g'|  tr ' ' '_')
     protien_tabels $VAR $NAME_protein $descript
     pathways $VAR
     mrna $VAR
     org_sequentie $VAR
+    # delete duplicaties.
+    cat mrna_table.txt |sort | uniq >mrna_table_clean.txt
+    cat eiwit_tabel.txt |sort | uniq >eiwit_table_clean.txt
+    cat ncbi_table.txt |sort | uniq >ncbi_table_clean.txt
+    cat org_table.txt |sort | uniq >org_table_clean.txt
+
     echo done
 done
 
-rm intro.txt
+rm intro.txt mrna_table.txt eiwit_tabel.txt ncbi_table.txt org_table.txt
 echo done
 
-#### run functions
