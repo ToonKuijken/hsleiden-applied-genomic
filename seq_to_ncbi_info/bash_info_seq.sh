@@ -29,7 +29,9 @@ function gene_loc {
 function org_seq {
     begin=$(cat $1 | grep 'NTSEQ ' -n | awk -F":" '{print $1}')
     eind=$(cat $1 | grep /// -n | awk -F":" '{print $1}')
-    lengte=$(( $eind - $begin))
+    echo debug data: $eind $begin
+    lengte=$((eind - begin))
+    echo did it work ?	
 
     seq=$(cat $1 |egrep 'NTSEQ' -n$lengte | tail -n$(($lengte)) | head -$(($lengte-1)) | tr -d [0-9]| tr -d - | tr -d ' '| tr -d '\n')
     printf \\t$seq>>ncbi_table.txt
@@ -99,8 +101,8 @@ function pathways {
         else
             end=$(cat $1 | grep BRITE -n | awk -F":" '{print $1}')
         fi
-
-        lengte=$(( $end - $begin))
+	echo does it wordk
+        lengte=$(( end - begin ))
 
         echo -e $name'\t'$(cat $1 |egrep 'PATHWAY' -n$lengte| tail -n$(($lengte+1)) | head -n$lengte | sed 's/oaa/ZZ oaa/g' | awk  -F 'ZZ ' '{print $2 "\\t"}')>>pathway_table.txt
     else
@@ -150,9 +152,8 @@ do
     protien_tabels $VAR $NAME_protein $descript
     pathways $VAR
     mrna $VAR
-    echo help
     org_sequentie $VAR
-    echo doioneee
+    echo done
 done
 
 rm intro.txt
