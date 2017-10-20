@@ -133,7 +133,7 @@ function org_sequentie {
 
 }
 
-
+#check of het bestan met info al bestaat
 if [  -e info_seq.txt  ]
 then
     rm info_seq.txt
