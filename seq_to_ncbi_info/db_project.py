@@ -159,8 +159,8 @@ def Tabel_Alles(con, cur):
     
     cur.execute("""CREATE TABLE Alles(
         Seq_id VARCHAR(150) PRIMARY KEY,
-        Ncbi_P_id VARCHAR(150),
-        Ncbi_G_id VARCHAR(150),
+        Ncbi_G_id VARCHAR(150),   
+        Ncbi_P_id VARCHAR(150),     
         Ncbi_MR_id VARCHAR(150))""")
 
 
