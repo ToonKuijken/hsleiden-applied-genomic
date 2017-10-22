@@ -68,7 +68,7 @@ def Tabel_info_seq(con, cur):
     '''Het maken van de tabel Info_seq'''
     cur.execute("""CREATE TABLE Info_seq(
         Seq_id VARCHAR(150) PRIMARY KEY REFERENCES Alles (Seq_id),
-        Orginale_seq VARCHAR(99999),
+        Orginale_seq VARCHAR(5000),
         Lengte INT)""")
 
 
@@ -84,20 +84,20 @@ def Tabel_Pathways(con, cur):
 def Tabel_Mrna(con, cur):
     '''Het maken van de tabel Mrna'''
     cur.execute("""CREATE TABLE Mrna(
-        NCBI_id_name VARCHAR(500) PRIMARY KEY,
+        Id_mrna VARCHAR(500) PRIMARY KEY,
         Lengte INT,
-        Seq VARCHAR(99999))""")
+        Seq VARCHAR(8000))""")
 
 
 def Tabel_Ncbi_gene(con, cur):
     '''Het maken van de tabel Ncbi_gene'''
     cur.execute("""CREATE TABLE Ncbi_gene(
-        Ncbi_id_name_gene VARCHAR(150) PRIMARY KEY,
+        Id_gen VARCHAR(150) PRIMARY KEY,
         Naam VARCHAR (150),
         Lengte INT,
         chromosom INT,
         Locatie VARCHAR(400),
-        Seq VARCHAR(99999),
+        Seq VARCHAR(4000),
         exonen int,
         Protien VARCHAR(150))""")
 
@@ -115,20 +115,20 @@ def Tabel_Alles(con, cur):
 def Tabel_Protien(con, cur):
     '''Het maken van de tabel Protien'''
     cur.execute("""CREATE TABLE Protien(
-        NCBI_naam_id_Protien VARCHAR(150) PRIMARY KEY,
-        Naam_Protien VARCHAR(150),
+        Id_protien VARCHAR(150) PRIMARY KEY,
+        Name_Protien VARCHAR(150),
         EC_code VARCHAR(30),
         Lengte_Protien INT,
-        Orginale_seq_AA VARCHAR(8000),
+        Orginale_seq_AA VARCHAR(4000),
         Pathway VARCHAR(50))""")
 
 
 def Keys(con, cur):
-    cur.execute("ALTER TABLE Alles ADD FOREIGN KEY(Ncbi_P_id) REFERENCES Protien(NCBI_naam_id_Protien)")
-    cur.execute("ALTER TABLE Alles ADD FOREIGN KEY(Ncbi_G_id) REFERENCES Ncbi_gene(Ncbi_id_name_gene)")
-    cur.execute("ALTER TABLE Alles ADD FOREIGN KEY(Ncbi_MR_id) REFERENCES Mrna (NCBI_id_name)")
+    cur.execute("ALTER TABLE Alles ADD FOREIGN KEY(Ncbi_P_id) REFERENCES Protien(Id_protien)")
+    cur.execute("ALTER TABLE Alles ADD FOREIGN KEY(Ncbi_G_id) REFERENCES Ncbi_gene(Id_gen)")
+    cur.execute("ALTER TABLE Alles ADD FOREIGN KEY(Ncbi_MR_id) REFERENCES Mrna (Id_mrna)")
     cur.execute("ALTER TABLE Protien ADD FOREIGN KEY(Pathway) REFERENCES Pathways(Naam_Pathway)")
-    cur.execute("ALTER TABLE Ncbi_gene ADD FOREIGN KEY(Protien) REFERENCES Protien(NCBI_naam_id_Protien)")
+    cur.execute("ALTER TABLE Ncbi_gene ADD FOREIGN KEY(Protien) REFERENCES Protien(Id_protien)")
 
 
 def Pathwyay_table(con, cur):
@@ -160,17 +160,17 @@ def protien_table(con, cur):
     f = open("eiwit_table_clean.txt", "r")
     for line in f.readlines():
         data = line.strip().split('\t')
-        print(data)
         data = [None if x == 'NONE' else x for x in data]
-        data.append('oaa' +data[0])
         print(data)
+        data.append('oaa' +data[0])
+
 
         cur.execute(protien_table_sql, data)
     con.commit()
 
 
 def Ncbi_gene_table(con, cur):
-    ncbi_gene_table = """
+    Ncbi_gene_table = """
     INSERT INTO Ncbi_gene VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
     f = open("ncbi_table_clean.txt", "r")
     for line in f.readlines():
@@ -178,7 +178,7 @@ def Ncbi_gene_table(con, cur):
         data.pop(3)
         data = [None if x == 'NONE' or x=='Unknown' else x for x in data]
 
-        cur.execute(ncbi_gene_table, tuple(data))
+        cur.execute(Ncbi_gene_table, tuple(data))
     con.commit()
 
 
@@ -200,7 +200,6 @@ def Info_seq_table(con, cur):
     for line in f.readlines():
         data = line.strip().split('\t')
         data = [None if x == 'NONE' else str(x) for x in data]
-
         cur.execute(org_info_sql, tuple(data))
     con.commit()
 
