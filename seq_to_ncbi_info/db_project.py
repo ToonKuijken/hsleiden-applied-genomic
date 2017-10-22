@@ -210,8 +210,8 @@ def info_alles(con, cur):
         with open('alles_table_clean.txt', 'w') as outfile:
             for i in a:
                 outfile.write(
-                    i.split(' ')[0].split('/')[1] + '\t' + i.split(' ')[len(i.split(' ')) - 2] + '\t' + i.split(' ')[
-                        2] + '\t' + i.split(' ')[len(i.split(' ')) - 1])
+                    i.split(' ')[0].split('/')[1]  + '\t' + i.split(' ')[
+                        2] + '\t' + i.split(' ')[len(i.split(' ')) - 2] + '\t' + i.split(' ')[len(i.split(' ')) - 1])
 
 
 def main():
