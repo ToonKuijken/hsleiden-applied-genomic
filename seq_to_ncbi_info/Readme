@@ -1,19 +1,23 @@
-hoe start je dit ??
-gebruik python3 in terminal.
+Toepassings instructies:
 
-het command:
+Maak gebruik van python3 in de terminal in Linux.
+Voor vervolgens het commando hieronder in:
 
 python3 seq_to_ncbi_entry_gen_id.py  seq_a3.fa GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa all_seq_info
 
-voor local gebruik uncommend lijnen :
+Voor locaal gebruik uncomment de volgende regels:
 input_seq = 'seq_a3.fa'
 proteome = "uniprot-proteome%3AUP000002279.fasta"
 ncbi_koppel_db = "GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_rna.fna"
 protenome_ncbi = 'GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa'
 outpute_name = 'ncbi_protien_info.txt'
 output_folder = 'sequence_info'
-en comment:
+
+en zet de volgende regel uit door er een comment van te maken:
 input_seq, protenome_ncbi, output_folder = system_input()
 
-
-eerst het .p dan de seq van ons , dan het faa met protiens. dan als laatste de folder voor de output per seq
+Resultaten:
+- het bestand .p
+- de verkregen sequentie
+- het bestand .fa met protienen
+- de folder met daarin de output per sequentie
