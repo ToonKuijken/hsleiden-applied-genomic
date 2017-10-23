@@ -6,8 +6,8 @@ ouptut_folder=$3
 
 
 function  gen_lenght {
-# funetie voor het berekenen van de lengte van het gen.
-#na he perekenen word er naar het bestand voor genen geschreven.
+# functie voor het berekenen van de lengte van het gen.
+# Na het berekenen worden de gegevens naar het bestand ncbi_table.txt geschreven.
     if [ $(cat $1 | egrep 'from: ' -m1 | wc| awk '{print $2}') == 9 ]
         then
            gene_length=$(cat $1 |egrep 'from: ' -m1 | awk '{print $NF-$(NF-2)}')
@@ -25,14 +25,14 @@ function  gen_lenght {
 }
 
 function gene_loc {
-  # Geeft de locatie van de genen van uit de kegg data
+  # Geeft de locatie van de genen vanuit de KEGG-data en schrijft het naar het bestand ncbi_table.txt.
     locatie=$(cat $1 | sed -e 's/( &gt; )//g' | sed -e 's/( &lt; )/ /g' | egrep 'from: ' -m1 | awk '{print $(NF-2)","$NF}')
     printf \\t$locatie>>ncbi_table.txt
 }
 
 function org_seq {
-  # Geeft de orginele sequentie van uit de kegg data.
-  # geeft een foutmedling als er geen kegg data is. de fout is dan bij lengte=$()
+  # Geeft de orginele sequentie van uit de KEGG-data en schrijft het naar het bestand ncbi_table.txt.
+  # Als er geen KEGG-data is geeft hij een foutmelding, dit wordt gecontroleerd bij lengte=$().
     begin=$(cat $1 | grep 'NTSEQ ' -n | awk -F":" '{print $1}')
     eind=$(cat $1 | grep /// -n | awk -F":" '{print $1}')
     lengte=$((eind - begin))
@@ -42,13 +42,13 @@ function org_seq {
 }
 
 function gene_tabels {
-  #Hier word alle over het gen verkregen.
+  # Hier wordt alles over het gen verkregen.
 
     VAR=$1
     ncbi_table_name=$(cat $VAR | egrep 'value>GeneID' | uniq | sed 's/D:/D: /g' | sed 's/<\// <\//' | awk '{print $2}' )
     printf $ncbi_table_name>>ncbi_table.txt
 
-    #Name van het gen.
+    # De naam van het gen.
     if grep -q 'NAME' $VAR
     then
         ncbi_gene_name=$(cat $VAR | egrep 'NAME' | awk '{print $2}')
@@ -57,24 +57,24 @@ function gene_tabels {
     fi
     printf \\t$ncbi_gene_name>> ncbi_table.txt
 
-    #De lengte van het gen.
+    # De lengte van het gen.
     gene_length= gen_lenght $VAR
     printf \\t$gene_length>>ncbi_table.txt
 
-    #Op welk chromosom ligt het gen.
-    chromosom=$(cat $VAR |grep \<GBQualifier_name\>chromosome\<  -n1 | tail -n1 | sed 's/</\t/g'| sed 's/>/\t/g' | awk '{print $3}')
-    printf \\t$chromosom>>ncbi_table.txt
+    # Op welk chromosoom ligt het gen.
+    chromosoom=$(cat $VAR |grep \<GBQualifier_name\>chromosome\<  -n1 | tail -n1 | sed 's/</\t/g'| sed 's/>/\t/g' | awk '{print $3}')
+    printf \\t$chromosoom>>ncbi_table.txt
 
-    #De locatie van het gen op het chromosoom/ genoom
+    # De locatie van het gen op het chromosoom in het genoom.
     location= gene_loc $VAR
-    #De orginele sequentie van het gen.
+    # De orginele sequentie van het gen.
     seq= org_seq $VAR
 
-    # exonen:
+    # Het aantal exonen.
     exonen=$(cat $VAR | grep [0-9]' exons' -m1 | awk '{print $(NF-7)}')
     printf \\t$exonen>>ncbi_table.txt
 
-    #name proten
+    # De naam van het eiwit.
     name=$(cat $VAR | grep seq_ | sed 's/XP/\xx XP/g' | sed 's/\\n/ xx /g'| awk  -F xx '{print $5}' | awk '{print $1}')
     printf \\t$name>>ncbi_table.txt
     printf \\n>>ncbi_table.txt
@@ -133,7 +133,7 @@ function org_sequentie {
 
 }
 
-#check of het bestan met info al bestaat
+# Controle of het bestand met info_seq.txt al bestaat.
 if [  -e info_seq.txt  ]
 then
     rm info_seq.txt
@@ -143,7 +143,7 @@ fi
 
 for VAR in $place/seq_0**
 do
-    # Alles wat er per sequntie word gedaan
+    # Alles wat er per sequentie wordt gedaan
     seq=$(echo $VAR | tr -d '.txt')
     NAME=$(cat $VAR | grep $seq)
     NAME_protein=$(cat $VAR | grep 'seq_' | awk -F \t '{print $2}' | tr -d '\\')
@@ -155,7 +155,7 @@ do
     cat intro.txt  >> gene_introextro.txt
     cat intro.txt >> $VAR
     echo start
-    # info voor alles in gene gen tabel
+    # Informatie voor alles in gene_tabel
     gene_tabels $VAR
     descript=$(cat $VAR | grep seq_ | sed 's/XP/\xx XP/g' | sed 's/\\n/ xx /g'| awk  -F xx '{print $5}'| sed -e 's/'$NAME_protein' //g'|  tr ' ' '_')
     protien_tabels $VAR $NAME_protein $descript
@@ -166,7 +166,7 @@ do
     echo done
 done
 
-# clean up van alles.
+# Verwijdering van alles.
 cat mrna_table.txt |sort | uniq >mrna_table_clean.txt
 cat eiwit_tabel.txt |sort | uniq >eiwit_table_clean.txt
 cat ncbi_table.txt | sort -u -t, -k1,1 | uniq >ncbi_table_clean.txt
