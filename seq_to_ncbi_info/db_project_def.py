@@ -69,7 +69,7 @@ def make_patways_files():
 
 # begin db setting
 
-def Setup():
+def Setup(host='localhost',db='project_perode_1',user='postgres_user',password='password'):
     """Deze funcite zorgt er voor dat er ingelogt kan worden om conectie te maken met de database
        en dat er querry's uit gevoerd kunnen worden via de terminal.
        
@@ -77,7 +77,7 @@ def Setup():
        :return: cur: Zorgt er voor dat de query uit gevoerd word.
     """
     con = None
-    con = psycopg2.connect("host='localhost' dbname='project_perode_1' user='postgres_user' password='password'")
+    con = psycopg2.connect("host='{}' dbname='{}' user='{}' password='{}'".format(host,db,user,password))
     cur = con.cursor()
     return con, cur
 
@@ -91,7 +91,7 @@ def clean_up_db(con, cur):
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
     
-    cur.execute("DROP TABLE IF EXISTS Squentie_info CASCADE;")
+    cur.execute("DROP TABLE IF EXISTS Sequentie_info CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Pathways CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Mrna CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Ncbi_gene CASCADE;")
@@ -100,7 +100,7 @@ def clean_up_db(con, cur):
 
 
 def Tabel_info_seq(con, cur):
-    """Het maken van de tabel Squentie_info. In deze tabel is Seq_id de PRIMARY KEY die refereerd naar tabel
+    """Het maken van de tabel Sequentie_info. In deze tabel is Seq_id de PRIMARY KEY die refereerd naar tabel
        Alles en het atribut Seq_id. Deze tabel zal bestaan uit drie kolomen: Seq_id, Orginale_seq en
        Lengte. De lengte is een INT en de andere twee een VARCHAR.
        
@@ -108,7 +108,7 @@ def Tabel_info_seq(con, cur):
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
     
-    cur.execute("""CREATE TABLE Squentie_info(
+    cur.execute("""CREATE TABLE Sequentie_info(
         Seq_id VARCHAR(7) PRIMARY KEY REFERENCES Seq_ncbi_combinatie (Seq_id),
         Orginale_seq VARCHAR(8000),
         Lengte INT)""")
@@ -272,10 +272,8 @@ def protien_table(con, cur):
     f = open("eiwit_table_clean.txt", "r")
     for line in f.readlines():
         data = line.strip().split('\t')
-        #print(data)
         data = [None if x == 'NONE' else x for x in data]
         data.append('oaa' +data[0])
-        #print(data)
 
         cur.execute(protien_table_sql, data)
     con.commit()
@@ -337,12 +335,11 @@ def Info_seq_table(con, cur):
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
     org_info_sql = """
-    INSERT INTO Squentie_info VALUES (%s,%s,%s)"""
+    INSERT INTO Sequentie_info VALUES (%s,%s,%s)"""
     f = open("org_table_clean.txt", "r")
     for line in f.readlines():
         data = line.strip().split('\t')
         data = [None if x == 'NONE' else str(x) for x in data]
-        print(data)
 
         cur.execute(org_info_sql, tuple(data))
     con.commit()
@@ -364,10 +361,29 @@ def info_alles(con, cur):
                     i.split(' ')[0].split('/')[1] + '\t' + i.split(' ')[len(i.split(' ')) - 2] + '\t' + i.split(' ')[
                         2] + '\t' + i.split(' ')[len(i.split(' ')) - 1])
 
+def get_parameters():
+    """Deze funcite van de parameer op die worden gegeven. Hiermee kan de db worden gekozen. Ook het wachtwoord gebuiker en de host."""
 
+    host = sys.argv[1]
+    db = sys.argv[2]
+    user = sys.argv[3]
+    password = sys.argv[4]
+    return host,db,user,password
+    
+    
 def main():
+    try:
+        host,db,user,password = get_parameters()
+    except IndexError:
+        print('no db values')
+        host='localhost'
+        db='project_perode_1'
+        user='postgres_user'
+        password='password'
+        print('using defaults')
+        
     make_patways_files()
-    con, cur = Setup()  # TODO make een var of zo.
+    con, cur = Setup(host,db,user,password)  # TODO make een var of zo.
     print("connected")
     clean_up_db(con, cur)
     con.commit()
