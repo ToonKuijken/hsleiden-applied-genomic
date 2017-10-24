@@ -81,6 +81,9 @@ function gene_tabels {
 }
 
 function protien_tabels {
+    #in deze funtie word alle info voor het ewiit verzamelt.
+    #Dit word dan geschreven naar eiwit_tabel.
+    #Er word naam groote ec lengte en de sequnetie opgehaald.
     VAR=$1
     NAME_protein=$2
     discript=$3
@@ -97,6 +100,9 @@ function protien_tabels {
 }
 
 function pathways {
+    # in deze funtie worden de pathwas opgehaald als deze bekend zijn voor het eiwit.
+    #als er geen beken zijn word er niks naar geschreven. 
+    #dus ook als het bestand er neit is is dat omdat er geen kegg data is.
     voor='oaa'
     name=$voor$(cat $VAR | grep 'seq_' | awk -F \t '{print $2}' | tr -d '\\')
     if grep -q 'PATHWAY' $1
@@ -118,6 +124,8 @@ function pathways {
 }
 
 function mrna {
+    # HIer word alles over het rna opgehaald wat bekent is.
+    #de lengte naam sequentie en dan word het naar een bestand geschreven.
     name=$(cat $1| egrep 'GBSeq_locus>XM_' | tr '>' ' ' | tr '<' ' ' | awk '{print $2}')
     lengte=$(cat $1| egrep '<GBSeq_length>' | tail -n1 | tr '>' ' ' | tr '<' ' ' | awk '{print $2}')
     seq=$(cat $1 | egrep '<GBSeq_sequence>' | tail -n1 | tr '<' ' ' | tr '>' ' ' | awk '{print $2}')
@@ -125,6 +133,7 @@ function mrna {
 }
 
 function org_sequentie {
+    #Hier word alles van de orginele mran opgehaald.
     name=$(cat $1| grep seq_0 | sed 's/\[/\t/g'| awk '{print $1}')
     sep=$(cat $orgninele_seqs | grep $name -n1 | tail -n1 | tr -d [0-9]| tr -d '-')
     lengt=$(echo $seq | wc | awk '{print $NF}'| tr -d '\n')
@@ -155,12 +164,17 @@ do
     cat intro.txt  >> gene_introextro.txt
     cat intro.txt >> $VAR
     echo start
-    # Informatie voor alles in gene_tabel
+    #Funties voor elk bestand.
+    #Voor gen info
     gene_tabels $VAR
     descript=$(cat $VAR | grep seq_ | sed 's/XP/\xx XP/g' | sed 's/\\n/ xx /g'| awk  -F xx '{print $5}'| sed -e 's/'$NAME_protein' //g'|  tr ' ' '_')
+    # funtie voor eiwit info.
     protien_tabels $VAR $NAME_protein $descript
+    #
     pathways $VAR
+
     mrna $VAR
+
     org_sequentie $VAR
 
     echo done
@@ -173,4 +187,3 @@ cat ncbi_table.txt | sort -u -t, -k1,1 | uniq >ncbi_table_clean.txt
 cat org_table.txt |sort | uniq >org_table_clean.txt
 rm intro.txt mrna_table.txt eiwit_tabel.txt ncbi_table.txt org_table.txt
 echo done
-
