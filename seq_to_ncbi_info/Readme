@@ -3,9 +3,9 @@ Toepassings instructies:
 Maak gebruik van python3 in de terminal in Linux.
 Voor vervolgens het commando hieronder in:
 
-python3 seq_to_ncbi_entry_gen_id.py  seq_a3.fa GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa all_seq_info
+python3 seq_to_ncbi_entry_gen_id.py  seq_a3.fa GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa all_seq_info localhost, project, postgres, password 
 
-Voor locaal gebruik uncomment de volgende regels:
+Voor local gebruik uncomment de volgende regels:
 input_seq = 'seq_a3.fa'
 proteome = "uniprot-proteome%3AUP000002279.fasta"
 ncbi_koppel_db = "GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_rna.fna"
