@@ -30,13 +30,14 @@ def pathway_info(gene_name, seq_name, output_folder):
         name = gene_name
         keggapi = bioservices.KEGG()
         gene_info = keggapi.get('oaa:' + name)
-        subprocess.call("echo  '" + str(gene_info) + '\n' + "'>>" + output_folder + "/" +
-                        seq_name + ".txt", shell=True)
+        subprocess.call(
+            "echo  '" + str(gene_info) + '\n' + "'>>" + output_folder + "/" +
+            seq_name + ".txt", shell=True)
     else:
         pass
 
 
-def sort_information(output_folder,input_seq ):
+def sort_information(output_folder, input_seq):
     """Dit is de functie voor het sorteren van alle gegevens uit de bestanden,
     hier worden dus alle tabellen gemaakt.
     Er worden nu bestanden aangemaakt: een debug bestand met alles.
@@ -48,7 +49,8 @@ def sort_information(output_folder,input_seq ):
     param: output_file: De folder waar alles in wordt geschreven (str).
     """
 
-    subprocess.call('bash bash_info_seq.sh ' + output_folder+ ' '+ input_seq, shell=True)
+    subprocess.call('bash bash_info_seq.sh ' + output_folder + ' ' + input_seq,
+                    shell=True)
     subprocess.call("cat info_seq.txt | awk '{ print $3 ,  substr($0,"
                     " index($0,$4))}' > 'eiwitcodes.txt'", shell=True)
     subprocess.call("bash list_of_genes.sh " + output_folder, shell=True)
@@ -56,8 +58,10 @@ def sort_information(output_folder,input_seq ):
 
 def compress_files(cf_data_list, cf_folder, cf_seq):
     """ Deze functie zet alle opgehaalde informatie vanuit een lijst in een
-     bestand. Hierdoor kan alle informatie uit een bestand worden gehaald en hoeft
-     er niet door 4 verschillende bestanden gezocht te worden naar de benodigde informatie.
+     bestand. Hierdoor kan alle informatie uit een bestand worden gehaald
+     en hoeft
+     er niet door 4 verschillende bestanden gezocht te worden naar de
+      benodigde informatie.
 
     :param cf_data_list: Een lijst met alle informatie van de sequneties (list).
     :param cf_folder: De folder waar alle bestanden staan (str).
@@ -76,10 +80,14 @@ def get_online_info(goi_eiwit_lijst, goi_output_folder):
     middel van Bash. Vervolgens wordt alles per sequentie in een bestand 
     geplaatst en kan er dus per sequentie informatie uit gehaald worden.
     Er wordt door de lijst met informatie die verkregen is heen gelopen 
-    om zo de naam er uit te halen. Daarna wordt er in het Bash-script getinfoandid.sh 
-    met wget informatie verkregen en vervolgens wordt dit in 3 bestanden gezet. Deze 
-    bestanden worden dan weer geopend en om alle informatie in een lijst te zetten. 
-    De lijst wordt meegegeven aan de functie compress_files(). Tenslotte wordt 
+    om zo de naam er uit te halen. Daarna wordt er in het Bash-script
+    getinfoandid.sh
+    met wget informatie verkregen en vervolgens wordt dit in 3 bestanden
+    gezet. Deze
+    bestanden worden dan weer geopend en om alle informatie in een lijst
+     te zetten.
+    De lijst wordt meegegeven aan de functie compress_files(). Tenslotte
+     wordt
     er met de functie pathway_info de informatie opgehaald uit KEGG.
 
     :param goi_eiwit_lijst: Lijst met alle eiwitnamen van uit de BLAST (list).
@@ -104,17 +112,21 @@ def get_online_info(goi_eiwit_lijst, goi_output_folder):
             All_seq_info.append(mRNA_file.readlines())
             All_seq_info.append('\n')
         compress_files(All_seq_info, goi_output_folder, seq_name)
-        pathway_info(str(subprocess.check_output("cat " + goi_output_folder + '/' +
-                                                 seq_name + ".txt | grep '\<Gene-track_geneid\>' |tr '<'"
-                                                            " '  ' |tr '>' ' ' | awk '{print $2}'",
-                                                 shell=True), 'utf8'), seq_name, goi_output_folder)
+        pathway_info(str(subprocess.check_output(
+            "cat " + goi_output_folder + '/' +
+            seq_name + ".txt | grep '\<Gene-track_geneid\>' |tr '<'"
+                       " '  ' |tr '>' ' ' | awk '{print $2}'",
+            shell=True), 'utf8'), seq_name, goi_output_folder)
 
 
 def return_full_seq(rfs_naam, rfs_protenome_ncbi):
-    """Deze functie haalt de hele sequentie uit het bestand rfs_protenome_ncbi.txt 
-    waar het protenoom instaat. Eerst wordt er gebruikmakend van Bash de index van 
+    """Deze functie haalt de hele sequentie uit het bestand rfs_protenome_ncbi.
+    txt
+    waar het protenoom instaat. Eerst wordt er gebruikmakend van Bash de index
+     van
     het eiwit opgehaald. Daarna wordt het bestand geopend en wordt er vanaf de 
-    index van het gen door heen gelopen totdat er een nieuwe sequentie gevonden wordt, 
+    index van het gen door heen gelopen totdat er een nieuwe sequentie gevonden
+     wordt,
     dit kan omdat bekend is dat elke sequentie begint met > in FASTA formaat. 
     Wanneer een regel begint met > wordt de sequentie gereturned.
 
@@ -140,21 +152,22 @@ def return_full_seq(rfs_naam, rfs_protenome_ncbi):
                 return gen_seq_and_info
 
 
-def make_lijst_information_gene(hits_list, protenome_ncbi):   #TODO
+def make_lijst_information_gene(hits_list, protenome_ncbi):  # TODO
     """ Deze functie maakt een overzichtelijke lijst van de hit samen met
     de volledige sequentie die in het protenoom bestand staat.
     De lijst wordt dan teruggegeven als deze is gevuld.
 
     :param protenome_ncbi: Het bestand waar het protenoom staat (str)(file).
     :param hits_list: Lijst met de hits van BLAST (lijst).
-    :return: gene_info_list: Lijst met de info van de hits met de sequentie er bij.
+    :return: gene_info_list: Lijst met de info van de hits met de sequentie
+     er bij.
     """
     gene_info_list = []
     for hit in hits_list:
         gene_info_list.append([hit.split('\t')[0],
-                          [hit, hit.split('\t')[1], 'nan',
-                           return_full_seq(hit.split('\t')[1],
-                                           protenome_ncbi)]])
+                               [hit, hit.split('\t')[1], 'nan',
+                                return_full_seq(hit.split('\t')[1],
+                                                protenome_ncbi)]])
     return gene_info_list
 
 
@@ -200,7 +213,8 @@ def blast_db_ncbi(bdn_input, bdn_db):
 
     :param bdn_input: Het bestand met de sequenties die geBLAST worden 
     (str)(bestand).
-    :param bdn_db: De naam van het FASTA bestand waar een database van is gemaakt
+    :param bdn_db: De naam van het FASTA bestand waar een database van is
+    gemaakt
     (str)(bestand).
     :return: Lijst met de beste hits van de BLAST tegenover het protenoom.
     """
@@ -236,7 +250,8 @@ def system_input():
     als een strings en worden gereturned.
 
     :return: si_input_seq : sequentie van de dataset (str)(bestand)(.fa).
-    si_protenome_ncbi: het bestand met het proteoom vanuit NCBI (str)(bestand)(.faa).
+    si_protenome_ncbi: het bestand met het proteoom vanuit NCBI (str)(bestand)
+    (.faa).
     si_output_folder: De folder waar alle bestand terecht komen (str)(folder).
     """
 
@@ -247,7 +262,7 @@ def system_input():
     db = sys.argv[5]
     user = sys.argv[6]
     password = sys.argv[7]
-    return si_input_seq, si_protenome_ncbi, si_output_folder,\
+    return si_input_seq, si_protenome_ncbi, si_output_folder, \
            host, db, user, password
 
 
@@ -260,7 +275,7 @@ def main():
     uit de BioServer.
     """
 
-    input_seq, protenome_ncbi,\
+    input_seq, protenome_ncbi, \
     output_folder, host, db, user, password = system_input()
     print(input_seq, protenome_ncbi, output_folder)
     make_db(protenome_ncbi)
@@ -273,6 +288,9 @@ def main():
     print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\
               \neiwitcodes.txt\nncbi_table.txt\neiwit_tabel.txt\nmrna_table.txt\
               \norg_table.txt\n\nFolders:\n{}".format(output_folder))
-    subprocess.call('pyhton3 db_project_def.py localhost project root password', shell=True)
+    subprocess.call(
+        'python db_project_def_met_keys.py localhost project root password',
+        shell=True)
+
 
 main()
