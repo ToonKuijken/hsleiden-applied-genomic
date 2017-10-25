@@ -4,6 +4,8 @@ import subprocess
 import importlib
 import sys
 import importlib
+import psycopg2
+
 
 """Support check"""
 spam_loader = importlib.find_loader('bioservices')
@@ -17,7 +19,7 @@ else:
 
 
 def pathway_info(gene_name, seq_name, output_folder):
-    """ Deze functie maakt gebruik van de bioservices modulen. Eerst wordt er 
+    """ Deze functie maakt gebruik van de bioservices modulen. Eerst wordt er
     gecontroleerd of de module geïnstaleerd is.
     Als deze geïnstalleerd is worden alle gegevens van het gen uit de KEGG
     database opgehaald. Dit wordt door middel van Bash naar het bestand van de
@@ -43,7 +45,7 @@ def sort_information(output_folder, input_seq):
     Er worden nu bestanden aangemaakt: een debug bestand met alles.
     Een bestand met alle huidige info, een bestand met een lijst van gencodes en
     namen en een bestand met een lijst van eiwitcodes en -namen.
-    Daarnaast worden er ook nog een aantal bestanden gemaakt voor het invoegen 
+    Daarnaast worden er ook nog een aantal bestanden gemaakt voor het invoegen
     van de gegevens in de database.
 
     param: output_file: De folder waar alles in wordt geschreven (str).
@@ -76,10 +78,10 @@ def compress_files(cf_data_list, cf_folder, cf_seq):
 
 
 def get_online_info(goi_eiwit_lijst, goi_output_folder):
-    """In deze functie wordt informatie van de NCBI database verkregen door 
-    middel van Bash. Vervolgens wordt alles per sequentie in een bestand 
+    """In deze functie wordt informatie van de NCBI database verkregen door
+    middel van Bash. Vervolgens wordt alles per sequentie in een bestand
     geplaatst en kan er dus per sequentie informatie uit gehaald worden.
-    Er wordt door de lijst met informatie die verkregen is heen gelopen 
+    Er wordt door de lijst met informatie die verkregen is heen gelopen
     om zo de naam er uit te halen. Daarna wordt er in het Bash-script
     getinfoandid.sh
     met wget informatie verkregen en vervolgens wordt dit in 3 bestanden
@@ -124,10 +126,10 @@ def return_full_seq(rfs_naam, rfs_protenome_ncbi):
     txt
     waar het protenoom instaat. Eerst wordt er gebruikmakend van Bash de index
      van
-    het eiwit opgehaald. Daarna wordt het bestand geopend en wordt er vanaf de 
+    het eiwit opgehaald. Daarna wordt het bestand geopend en wordt er vanaf de
     index van het gen door heen gelopen totdat er een nieuwe sequentie gevonden
      wordt,
-    dit kan omdat bekend is dat elke sequentie begint met > in FASTA formaat. 
+    dit kan omdat bekend is dat elke sequentie begint met > in FASTA formaat.
     Wanneer een regel begint met > wordt de sequentie gereturned.
 
     :param rfs_naam: De naam van het eiwit wat gevonden is en
@@ -206,12 +208,12 @@ def blast_db_ncbi(bdn_input, bdn_db):
     eerst wordt er met de functie fasta_file_to_list() een lijst met
     sequenties gemaakt in FASTA formaat. Door deze lijst wordt dan heen
     gelopen en wordt er steeds een nieuw betand gemaakt met de sequenties erin,
-    vervolgens wordt er met dit bestand geBLAST met subpocess.check_output(). 
-    Dan wordt de beste hit door middel van head -n1 gepakt, dit wordt dan 
-    gestring in utf8 formaat. Hierna wordt het aan een lijst toegevoegd 
+    vervolgens wordt er met dit bestand geBLAST met subpocess.check_output().
+    Dan wordt de beste hit door middel van head -n1 gepakt, dit wordt dan
+    gestring in utf8 formaat. Hierna wordt het aan een lijst toegevoegd
     en wordt de lijst teruggegeven aan de main functie.
 
-    :param bdn_input: Het bestand met de sequenties die geBLAST worden 
+    :param bdn_input: Het bestand met de sequenties die geBLAST worden
     (str)(bestand).
     :param bdn_db: De naam van het FASTA bestand waar een database van is
     gemaakt
@@ -246,7 +248,7 @@ def make_db(md_file):
 
 def system_input():
     """Deze functie vangt alle variabelen op van de terminal als python hier in
-    gedraaid wordt. Dit gebeurt met sys.arg, deze variabelen worden opgeslagen 
+    gedraaid wordt. Dit gebeurt met sys.arg, deze variabelen worden opgeslagen
     als een strings en worden gereturned.
 
     :return: si_input_seq : sequentie van de dataset (str)(bestand)(.fa).
@@ -275,8 +277,7 @@ def main():
     uit de BioServer.
     """
 
-    input_seq, protenome_ncbi, \
-    output_folder, host, db, user, password = system_input()
+    input_seq, protenome_ncbi, output_folder, host, db, user, password = system_input()
     print(input_seq, protenome_ncbi, output_folder)
     make_db(protenome_ncbi)
     print('db done')
@@ -286,11 +287,10 @@ def main():
     get_online_info(gene_lijst, output_folder)
     sort_information(output_folder, input_seq)
     print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\
-              \neiwitcodes.txt\nncbi_table.txt\neiwit_tabel.txt\nmrna_table.txt\
-              \norg_table.txt\n\nFolders:\n{}".format(output_folder))
+             \neiwitcodes.txt\nncbi_table.txt\neiwit_tabel.txt\nmrna_table.txt\
+             \norg_table.txt\n\nFolders:\n{}".format(output_folder))
     subprocess.call(
-        'python db_project_def_met_keys.py localhost project root password',
-        shell=True)
+        'python3 db_project_def_met_keys.py '+ host + ' '+ db+ ' '+ user+ ' '+ password, shell=True)
 
 
 main()
