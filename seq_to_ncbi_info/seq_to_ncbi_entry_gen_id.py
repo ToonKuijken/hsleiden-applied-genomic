@@ -243,7 +243,12 @@ def system_input():
     si_input_seq = sys.argv[1]
     si_protenome_ncbi = sys.argv[2]
     si_output_folder = sys.argv[3]
-    return si_input_seq, si_protenome_ncbi, si_output_folder
+    host = sys.argv[4]
+    db = sys.argv[5]
+    user = sys.argv[6]
+    password = sys.argv[7]
+    return si_input_seq, si_protenome_ncbi, si_output_folder,\
+           host, db, user, password
 
 
 def main():
@@ -255,7 +260,8 @@ def main():
     uit de BioServer.
     """
 
-    input_seq, protenome_ncbi, output_folder = system_input()
+    input_seq, protenome_ncbi,\
+    output_folder, host, db, user, password = system_input()
     print(input_seq, protenome_ncbi, output_folder)
     make_db(protenome_ncbi)
     print('db done')
@@ -267,5 +273,6 @@ def main():
     print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\
               \neiwitcodes.txt\nncbi_table.txt\neiwit_tabel.txt\nmrna_table.txt\
               \norg_table.txt\n\nFolders:\n{}".format(output_folder))
+    subprocess.call('pyhton3 db_project_def.py localhost project root password', shell=True)
 
 main()

@@ -72,7 +72,7 @@ def make_patways_files():
 def Setup(host='localhost',db='project_perode_1',user='postgres_user',password='password'):
     """Deze funcite zorgt er voor dat er ingelogt kan worden om conectie te maken met de database
        en dat er querry's uit gevoerd kunnen worden via de terminal.
-       
+
        :return: con: Logit in op postgrespsql.
        :return: cur: Zorgt er voor dat de query uit gevoerd word.
     """
@@ -84,14 +84,14 @@ def Setup(host='localhost',db='project_perode_1',user='postgres_user',password='
 
 def clean_up_db(con, cur):
     """Deze fucntie maakt de bestaande tabellen leeg en verbreekt de connectie
-    tussen de tabellen als ze die hebben. Als de tabellen niet bestaan 
+    tussen de tabellen als ze die hebben. Als de tabellen niet bestaan
     treed er geen fout melding op en gaat het
     programma verder met runnen.
 
        :param con: Logit in op postgrespsql.
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
-    
+
     cur.execute("DROP TABLE IF EXISTS Sequentie_info CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Pathways CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Mrna CASCADE;")
@@ -106,11 +106,11 @@ def Tabel_info_seq(con, cur):
        Alles en het atribut Seq_id. Deze tabel zal bestaan uit drie kolomen:
        Seq_id, Orginale_seq en
        Lengte. De lengte is een INT en de andere twee een VARCHAR.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
-    
+
     cur.execute("""CREATE TABLE Sequentie_info(
         Seq_id VARCHAR(7) PRIMARY KEY REFERENCES Seq_ncbi_combinatie
         (Seq_id), Orginale_seq VARCHAR(8000),
@@ -121,11 +121,11 @@ def Tabel_Pathways(con, cur):
     """Het maken van de tabel Pathways.In deze tabel is ID de PRIMARY KEY. Deze tabel zal uit vier
        kolomen bestaan: ID als een SERIAL en Id_Pathway, Naam_Pathway, Info als VARCHAR. ID is als
        SERIal een goeie PRIMARY KEY, omdat het steeds een nieuwe en unieke waarde toevoegt.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
-    
+
     cur.execute("""CREATE TABLE Pathways(
         ID SERIAL PRIMARY KEY,
         Id_pathway VARCHAR(50) ,
@@ -137,11 +137,11 @@ def Tabel_Mrna(con, cur):
     """Het maken van de tabel Mrna. In deze tabel is ncbi_id de PRIMARY KEY.
     Hier zullen drie kolomen worden gemaakt: ncbi_id en Seq als VARCHAR en
     Lengte als INT.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
-    
+
     cur.execute("""CREATE TABLE Mrna(
         ncbi_id VARCHAR(500) PRIMARY KEY,
         Lengte INT,
@@ -153,14 +153,14 @@ def Tabel_Ncbi_gene(con, cur):
     de PRIMARY KEY. Hier zullen
     acht kolomen worden gemaakt: Ncbi_id als VARCHAR, Naam als VARCHAR,
     Lengte als Int,
-    Chromosom als Int, Locatie als VARCHAR, Seq als VARCHAR, Exonen als 
+    Chromosom als Int, Locatie als VARCHAR, Seq als VARCHAR, Exonen als
     INT en tot slot Ncbi_protien_id
     als VARCHAR.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
-    
+
     cur.execute("""CREATE TABLE Ncbi_gene(
         Ncbi_id VARCHAR(150) PRIMARY KEY,
         Naam VARCHAR (150),
@@ -173,30 +173,30 @@ def Tabel_Ncbi_gene(con, cur):
 
 
 def Tabel_Alles(con, cur):
-    """Het maken van de tabel Seq_ncbi_combinatie. In deze tabel is Seq_id de 
+    """Het maken van de tabel Seq_ncbi_combinatie. In deze tabel is Seq_id de
     PRIMARY KEY. Hier zullen
-    vier kolomen worden gemaakt: Seq_id, Ncbi_p_id, Ncbi_g_id en Ncbi_mr_id 
+    vier kolomen worden gemaakt: Seq_id, Ncbi_p_id, Ncbi_g_id en Ncbi_mr_id
     allemaal als VARCHAR.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
     # Ncbi_g_id of Ncbi_p_id omgedraaid?
     cur.execute("""CREATE TABLE Seq_ncbi_combinatie(
         Seq_id VARCHAR(7) PRIMARY KEY,
-        Ncbi_g_id VARCHAR(150),   
-        Ncbi_p_id VARCHAR(150),     
+        Ncbi_g_id VARCHAR(150),
+        Ncbi_p_id VARCHAR(150),
         Ncbi_mr_id VARCHAR(150))""")
 
 
 def Tabel_Protien(con, cur):
-    """Het maken van de tabel Protien.In deze tabel is NCBI_naam_id_Protien de 
+    """Het maken van de tabel Protien.In deze tabel is NCBI_naam_id_Protien de
     PRIMARY KEY. Hier zullen
-       zes kolomen worden gemaakt: NCBI_naam_id_Protien als VARCHAR, 
+       zes kolomen worden gemaakt: NCBI_naam_id_Protien als VARCHAR,
        Naam_Protien als VARCHAR, EC_code
-       als VARCHAR, Lengte_Protien als INT, Orginale_seq_aa als VARCHAR en 
+       als VARCHAR, Lengte_Protien als INT, Orginale_seq_aa als VARCHAR en
        Pathway als VARCHAR.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
@@ -210,41 +210,41 @@ def Tabel_Protien(con, cur):
 
 
 def Keys(con, cur):
-    """Deze fucntie voegt de FOREIGN KEY'S toe na dat de tabelen met de 
+    """Deze fucntie voegt de FOREIGN KEY'S toe na dat de tabelen met de
     PRIMARY KEY zijn gemaakt.
-       Hier worden de meeste FOREIGN KEY'S gemaakt van de atributen die in de 
+       Hier worden de meeste FOREIGN KEY'S gemaakt van de atributen die in de
        tabel Alles zitten.
        Deze FOREIGN KEY'S verbinden de tabellen met elkaar.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
-    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD
-                FOREIGN KEY(Ncbi_p_id) REFERENCES Protien(Ncbi_id)")
-    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD
-                FOREIGN KEY(Ncbi_g_id) REFERENCES Ncbi_gene(Ncbi_id)")
-    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD
-                FOREIGN KEY(Ncbi_mr_id) REFERENCES Mrna (ncbi_id)")
-    cur.execute("ALTER TABLE Protien ADD FOREIGN
-                KEY(Pathway) REFERENCES Pathways(Naam_Pathway)")
-    cur.execute("ALTER TABLE Ncbi_gene ADD FOREIGN
-                KEY(Ncbi_protien_id) REFERENCES 
-                Protien(NCBI_naam_id_Protien)")
+    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD "
+                "FOREIGN KEY(Ncbi_p_id) REFERENCES Protien(Ncbi_id)")
+    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD "
+                "FOREIGN KEY(Ncbi_g_id) REFERENCES Ncbi_gene(Ncbi_id)")
+    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD "
+                "FOREIGN KEY(Ncbi_mr_id) REFERENCES Mrna (ncbi_id)")
+    cur.execute("ALTER TABLE Protien ADD FOREIGN "
+                "KEY(Pathway) REFERENCES Pathways(Naam_Pathway)")
+    cur.execute("ALTER TABLE Ncbi_gene ADD FOREIGN "
+                "KEY(Ncbi_protien_id) REFERENCES  "
+                "Protien(NCBI_naam_id_Protien)")
 
 
 def Pathwyay_table(con, cur):
-    """Deze functie leest de het bestand "clean_pathway.txt". Uit dit bestand 
+    """Deze functie leest de het bestand "clean_pathway.txt". Uit dit bestand
     word er dankzij een
-       forloop de inhoud gelezen en in de juiste kolomen gestopt. De manier 
+       forloop de inhoud gelezen en in de juiste kolomen gestopt. De manier
        waarop de inhoud in de
-       juiste kolom terecht komt is door gebruik te maken van tab's ('\t'). In 
+       juiste kolom terecht komt is door gebruik te maken van tab's ('\t'). In
        het bestand staat de
-       inhoud gescheiden in tab's, na elke tab word de informatie in een 
+       inhoud gescheiden in tab's, na elke tab word de informatie in een
        andere kolom gezet. Dit
-       proces herhaald zich tot dat alle inhoud uit het bestand 
+       proces herhaald zich tot dat alle inhoud uit het bestand
        "clean_pathway.txt" in kolom is
        ingedeeld.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
@@ -261,16 +261,16 @@ def Pathwyay_table(con, cur):
 
 
 def alles_table(con, cur):
-    """Deze functie leest de het bestand "alles_table_clean.txt". Uit dit 
+    """Deze functie leest de het bestand "alles_table_clean.txt". Uit dit
     bestand word er dankzij een
-       forloop de inhoud gelezen en in de juiste kolomen gestopt. De manier 
+       forloop de inhoud gelezen en in de juiste kolomen gestopt. De manier
        waarop de inhoud in de
-       juiste kolom terecht komt is door gebruik te maken van tab's ('\t'). In 
+       juiste kolom terecht komt is door gebruik te maken van tab's ('\t'). In
        het bestand staat de
        inhoud gescheiden in tab's, na elke tab word de informatie in een andere kolom gezet. Dit
        proces herhaald zich tot dat alle inhoud uit het bestand "alles_table_clean.txt" in kolom is
        ingedeeld.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
@@ -291,7 +291,7 @@ def protien_table(con, cur):
        inhoud gescheiden in tab's, na elke tab word de informatie in een andere kolom gezet. Dit
        proces herhaald zich tot dat alle inhoud uit het bestand "eiwit_table_clean.txt" in kolom is
        ingedeeld.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
@@ -314,7 +314,7 @@ def Ncbi_gene_table(con, cur):
        inhoud gescheiden in tab's, na elke tab word de informatie in een andere kolom gezet. Dit
        proces herhaald zich tot dat alle inhoud uit het bestand "ncbi_table_clean.txt" in kolom is
        ingedeeld.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
@@ -337,7 +337,7 @@ def Mrna_table(con, cur):
        inhoud gescheiden in tab's, na elke tab word de informatie in een andere kolom gezet. Dit
        proces herhaald zich tot dat alle inhoud uit het bestand "mrna_table_clean.txt" in kolom is
        ingedeeld.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
@@ -358,7 +358,7 @@ def Info_seq_table(con, cur):
        inhoud gescheiden in tab's, na elke tab word de informatie in een andere kolom gezet. Dit
        proces herhaald zich tot dat alle inhoud uit het bestand "org_table_clean.txt" in kolom is
        ingedeeld.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
@@ -377,7 +377,7 @@ def info_alles(con, cur):
        het bestand 'info_seq.txt' te halen, doormiddel van een for loop. De informatie wordt in
        vier rijen gescheiden doormiddel van tab's ('\t'). Door tab's toe te voegen is het makkelijker
        om de informatie in de database te zetten.
-       
+
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
@@ -397,19 +397,20 @@ def get_parameters():
     user = sys.argv[3]
     password = sys.argv[4]
     return host,db,user,password
-    
-    
+
+
 def main():
     try:
         host,db,user,password = get_parameters()
     except IndexError:
         print('no db values')
         host='localhost'
-        db='project_perode_1'
-        user='postgres_user'
+        db='project'
+        user='postgres'
         password='password'
+
         print('using defaults')
-        
+
     make_patways_files()
     con, cur = Setup(host,db,user,password)  # TODO make een var of zo.
     print("connected")
@@ -440,4 +441,3 @@ def main():
 
 
 main()
-
