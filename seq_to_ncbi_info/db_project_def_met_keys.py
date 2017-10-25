@@ -98,6 +98,8 @@ def clean_up_db(con, cur):
     cur.execute("DROP TABLE IF EXISTS Seq_ncbi_combinatie CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Protien CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Protein CASCADE;")
+    cur.execute("DROP TABLE IF EXISTS Ncbi_Protein CASCADE;")
+    cur.execute("DROP TABLE IF EXISTS Ncbi_Mrna CASCADE;")
 
 
 def Tabel_info_seq(con, cur):
@@ -132,14 +134,14 @@ def Tabel_Pathways(con, cur):
 
 
 def Tabel_Mrna(con, cur):
-    """Het maken van de tabel Mrna. In deze tabel is ncbi_id de PRIMARY KEY. Hier zullen
+    """Het maken van de tabel Ncbi_Mrna. In deze tabel is ncbi_id de PRIMARY KEY. Hier zullen
        drie kolomen worden gemaakt: ncbi_id en Seq als VARCHAR en Lengte als INT.
 
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
 
-    cur.execute("""CREATE TABLE Mrna(
+    cur.execute("""CREATE TABLE Ncbi_Mrna(
         ncbi_id VARCHAR(500) PRIMARY KEY,
         Lengte INT,
         Seq VARCHAR(8000))""")
@@ -183,14 +185,14 @@ def Tabel_Alles(con, cur):
 
 
 def Tabel_Protein(con, cur):
-    """Het maken van de tabel Protein.In deze tabel is NCBI_naam_id_Protien de PRIMARY KEY. Hier zullen
+    """Het maken van de tabel Ncbi_Protein.In deze tabel is NCBI_naam_id_Protien de PRIMARY KEY. Hier zullen
        zes kolomen worden gemaakt: NCBI_naam_id_Protien als VARCHAR, Naam_Protien als VARCHAR, EC_code
        als VARCHAR, Lengte_Protien als INT, Orginale_seq_aa als VARCHAR en Pathway als VARCHAR.
 
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
-    cur.execute("""CREATE TABLE Protein(
+    cur.execute("""CREATE TABLE Ncbi_Protein(
         ID_Protein SERIAL,
         Ncbi_id VARCHAR(150) PRIMARY KEY,
         Naam_Protein VARCHAR(150),
@@ -210,9 +212,9 @@ def Keys(con, cur):
     """
     cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(Ncbi_g_id) REFERENCES Protein(Ncbi_id)")
     cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(ncbi_p_id) REFERENCES Ncbi_gene(ncbi_id)")
-    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(Ncbi_mr_id) REFERENCES Mrna (ncbi_id)")
-    cur.execute("ALTER TABLE Protein ADD FOREIGN KEY(ID_Protein) REFERENCES Pathways(ID)")
-    cur.execute("ALTER TABLE Ncbi_gene ADD FOREIGN KEY(Ncbi_protein_id) REFERENCES Protein(Ncbi_id)")
+    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(Ncbi_mr_id) REFERENCES Ncbi_Mrna (ncbi_id)")
+    cur.execute("ALTER TABLE Ncbi_Protein ADD FOREIGN KEY(ID_Protein) REFERENCES Pathways(ID)")
+    cur.execute("ALTER TABLE Ncbi_gene ADD FOREIGN KEY(Ncbi_protein_id) REFERENCES Ncbi_Protein(Ncbi_id)")
 
 
 def Pathwyay_table(con, cur):
@@ -270,7 +272,7 @@ def protien_table(con, cur):
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
     protien_table_sql = """
-    INSERT INTO Protein (Ncbi_id, Naam_Protein, EC_code, Lengte_Protein, Orginale_seq_aa,Pathway)
+    INSERT INTO Ncbi_Protein (Ncbi_id, Naam_Protein, EC_code, Lengte_Protein, Orginale_seq_aa,Pathway)
     VALUES (%s,%s,%s,%s,%s,%s)"""
     f = open("eiwit_table_clean.txt", "r")
     for line in f.readlines():
@@ -317,7 +319,7 @@ def Mrna_table(con, cur):
        :param cur: Zorgt er voor dat de query uit gevoerd word.
     """
     Mrna_table = """
-    INSERT INTO Mrna VALUES (%s,%s,%s)"""
+    INSERT INTO Ncbi_Mrna VALUES (%s,%s,%s)"""
     f = open("mrna_table_clean.txt", "r")
     for line in f.readlines():
         data = line.strip().split('\t')
