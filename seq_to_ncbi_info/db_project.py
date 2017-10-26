@@ -1,8 +1,8 @@
 import psycopg2
 import sys
 
-# funcites voor de pathways tabel
-"""script voor mike ze tabellen"""
+# Functies voor de pathways tabel.
+"""script voor mike zijn tabellen"""
 import subprocess
 
 
@@ -38,25 +38,25 @@ def write_to_file(clean_path):
 
 
 def make_patways_files():
-    """Deze fucntie roept drie andere fucnties aan om de informatie van het bestand "pathway_table.txt"
-       te filteren. Na dat de informatie uit "pathway_table.txt" is gehaald word er lijst gemaakt, deze
-       lijst word nog gefilteerd en vervolgens als een bestand weg geschereven.
+    """Deze functie roept drie andere functies aan om de informatie van het bestand "pathway_table.txt"
+       te filteren. Na dat de informatie uit "pathway_table.txt" is gehaald wordt er een lijst gemaakt, deze
+       lijst wordt nog gefiltreerd en vervolgens als een bestand weg geschereven.
     """
     inhoud_bestand = open_en_split('pathway_table.txt')
     clean_path = clean_make_lists(inhoud_bestand)
     write_to_file(clean_path)
 
 
-# einde van de funties
+# Einde van de functies
 
-# begin db setting
+# Begin db setting
 
 def Setup():
-    """Deze funcite zorgt er voor dat er ingelogt kan worden om conectie te maken met de database
-       en dat er querry's uit gevoerd kunnen worden via de terminal.
+    """Deze functie zorgt ervoor dat er ingelogt kan worden om connectie te maken met de database
+       en dat er query's uitgevoerd kunnen worden via de terminal.
        
-       :return: con: Logit in op postgrespsql
-       :return: cur: Zorgt er voor dat de query uit gevoerd word.
+       :return: con: Logt in op postgrespsql.
+       :return: cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
     con = None
     con = psycopg2.connect("host='localhost' dbname='project_perode_1' user='postgres_user' password='password'")
@@ -65,12 +65,12 @@ def Setup():
 
 
 def clean_up_db(con, cur):
-    """Deze fucntie maakt de bestaande tabellen leeg en verbreekt de connectie tussen de tabellen
-       als ze die hebben. Als de tabellen niet bestaan treed er geen fout melding op en gaat het
+    """Deze functie maakt de bestaande tabellen leeg en verbreekt de connectie tussen de tabellen
+       als er connecties zijn. Als de tabellen niet bestaan treed er geen fout melding op en gaat het
        programma verder met runnen.
 
-       :param con: Logit in op postgrespsql
-       :param cur: Zorgt er voor dat de query uit gevoerd word.
+       :param con: Logt in op postgrespsql.
+       :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
     
     cur.execute("DROP TABLE IF EXISTS Info_seq CASCADE;")
@@ -83,11 +83,11 @@ def clean_up_db(con, cur):
 
 def Tabel_info_seq(con, cur):
     """Het maken van de tabel Info_seq. In deze tabel is Seq_id de PRIMARY KEY die refereerd naar tabel
-       Alles en het atribut Seq_id. Deze tabel zal bestaan uit drie kolomen: Seq_id, Orginale_seq en
+       Alles en het attribuut Seq_id. Deze tabel zal bestaan uit drie kolomen: Seq_id, Orginale_seq en
        Lengte. De lengte is een INT en de andere twee een VARCHAR.
        
-       :param con: Logit in op postgrespsql
-       :param cur: Zorgt er voor dat de query uit gevoerd word.
+       :param con: Logt in op postgrespsql.
+       :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
     
     cur.execute("""CREATE TABLE Info_seq(
@@ -97,12 +97,12 @@ def Tabel_info_seq(con, cur):
 
 
 def Tabel_Pathways(con, cur):
-    """Het maken van de tabel Pathways.In deze tabel is ID de PRIMARY KEY. Deze tabel zal uit vier
-       kolomen bestaan: ID als een SERIAL en Id_Pathway, Naam_Pathway, Info als VARCHAR. ID is als
-       SERIal een goeie PRIMARY KEY, omdat het steeds een nieuwe en unieke waarde toevoegt.
+    """Het maken van de tabel Pathways. In deze tabel is ID de PRIMARY KEY. Deze tabel zal uit vier
+       kolommen bestaan: ID als een SERIAL en Id_Pathway, Naam_Pathway, Info als VARCHAR. ID is als
+       SERIAl een goede PRIMARY KEY, omdat het steeds een nieuwe en unieke waarde toevoegt.
        
-       :param con: Logit in op postgrespsql
-       :param cur: Zorgt er voor dat de query uit gevoerd word.
+       :param con: Logt in op postgrespsql.
+       :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
     
     cur.execute("""CREATE TABLE Pathways(
@@ -116,8 +116,8 @@ def Tabel_Mrna(con, cur):
     """Het maken van de tabel Pathways. In deze tabel is NCBI_id_name de PRIMARY KEY. Hier zullen
        drie kolomen worden gemaakt: NCBI_id_name en Seq als VARCHAR en Lengte als INT.
        
-       :param con: Logit in op postgrespsql
-       :param cur: Zorgt er voor dat de query uit gevoerd word.
+       :param con: Logt in op postgrespsql.
+       :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
     
     cur.execute("""CREATE TABLE Mrna(
@@ -129,11 +129,11 @@ def Tabel_Mrna(con, cur):
 def Tabel_Ncbi_gene(con, cur):
     """Het maken van de tabel Ncbi_gene. In deze tabel is NCBI_id_name_gene de PRIMARY KEY. Hier zullen
        acht kolomen worden gemaakt: NCBI_id_name_gene als VARCHAR, Naam als VARCHAR, Lengte als Int,
-       Chromosom als Int, Locatie als VARCHAR, Seq als VARCHAR, Exonen als INT en tot slot Protien als
+       Chromosoom als Int, Locatie als VARCHAR, Seq als VARCHAR, Exonen als INT en tot slot Protien als
        VARCHAR.
        
-       :param con: Logit in op postgrespsql
-       :param cur: Zorgt er voor dat de query uit gevoerd word.
+       :param con: Logt in op postgrespsql
+       :param cur: Zorgt er voor dat de query uitgevoerd wordt.
     """
     
     cur.execute("""CREATE TABLE Ncbi_gene(
