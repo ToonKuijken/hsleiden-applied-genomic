@@ -31,8 +31,8 @@ function gene_loc {
 }
 
 function org_seq {
-  # Geeft de orginele sequentie van uit de KEGG-data en schrijft het naar het bestand ncbi_table.txt.
-  # Als er geen KEGG-data is geeft hij een foutmelding, dit wordt gecontroleerd bij lengte=$().
+     # Geeft de orginele sequentie van uit de KEGG-data en schrijft het naar het bestand ncbi_table.txt.
+     # Als er geen KEGG-data is geeft hij een foutmelding, dit wordt gecontroleerd bij lengte=$().
     begin=$(cat $1 | grep 'NTSEQ ' -n | awk -F":" '{print $1}')
     end=$(cat $1 | grep /// -n | awk -F":" '{print $1}')
     length=$((end - begin))
@@ -43,7 +43,6 @@ function org_seq {
 
 function gene_tables {
   # Hier wordt alles over het gen verkregen.
-
     VAR=$1
     ncbi_table_name=$(cat $VAR | egrep 'value>GeneID' | uniq | sed 's/D:/D: /g' | sed 's/<\// <\//' | awk '{print $2}' )
     printf $ncbi_table_name>>ncbi_table.txt
@@ -81,9 +80,9 @@ function gene_tables {
 }
 
 function protein_tables {
-    #in deze funtie word alle info voor het ewiit verzamelt.
-    #Dit word dan geschreven naar eiwit_tabel.
-    #Er word naam groote ec lengte en de sequnetie opgehaald.
+     # In deze functie wordt alle informatie van het eiwit verzamelt.
+    # Dit wordt dan geschreven naar eiwit_tabel.
+    # De naam, grootte, EC-nummer, lengte en de sequentie worde hier opgehaald.
     VAR=$1
     NAME_protein=$2
     discript=$3
@@ -100,9 +99,8 @@ function protein_tables {
 }
 
 function pathways {
-    # in deze funtie worden de pathwas opgehaald als deze bekend zijn voor het eiwit.
-    #als er geen beken zijn word er niks naar geschreven.
-    #dus ook als het bestand er neit is is dat omdat er geen kegg data is.
+    # In deze functie worden de pathways waar het eiwit inzit opgehaald als deze bekend zijn.
+    # Als er geen kegg data aanwezig is wordt er niks weg geschreven.
     voor='oaa'
     name=$voor$(cat $VAR | grep 'seq_' | awk -F \t '{print $2}' | tr -d '\\')
     if grep -q 'PATHWAY' $1
@@ -124,8 +122,8 @@ function pathways {
 }
 
 function mrna {
-    # HIer word alles over het rna opgehaald wat bekent is.
-    #de lengte naam sequentie en dan word het naar een bestand geschreven.
+     # Hier wordt alles over het mRNA opgehaald wat bekent is.
+    # De lengte, naam en sequentie worden naar een bestand geschreven.
     name=$(cat $1| egrep 'GBSeq_locus>XM_' | tr '>' ' ' | tr '<' ' ' | awk '{print $2}')
     length=$(cat $1| egrep '<GBSeq_length>' | tail -n1 | tr '>' ' ' | tr '<' ' ' | awk '{print $2}')
     seq=$(cat $1 | egrep '<GBSeq_sequence>' | tail -n1 | tr '<' ' ' | tr '>' ' ' | awk '{print $2}')
@@ -133,8 +131,8 @@ function mrna {
 }
 
 function org_sequence {
-    #Hier word alles van de orginele mran opgehaald.
-    name=$(cat $1| grep seq_0 | sed 's/\[/\t/g'| awk '{print $1}')
+    # Hier wordt alles van de orginele mRNA opgehaald.
+   name=$(cat $1| grep seq_0 | sed 's/\[/\t/g'| awk '{print $1}')
     sep=$(cat $original_seqs | grep $name -n1 | tail -n1 | tr -d [0-9]| tr -d '-')
     length=$(echo $seq | wc | awk '{print $NF}'| tr -d '\n')
     printf $name\\t$seq\\t$length\\n>>org_table.txt
@@ -164,13 +162,12 @@ do
     cat intro.txt  >> gene_introextro.txt
     cat intro.txt >> $VAR
     echo start
-    #Funties voor elk bestand.
-    #Voor gen info
+    # Funties voor elk bestand:
+    # Voor elk gen met bijbehorende informatie.
     gene_tables $VAR
     discription=$(cat $VAR | grep seq_ | sed 's/XP/\xx XP/g' | sed 's/\\n/ xx /g'| awk  -F xx '{print $5}'| sed -e 's/'$NAME_protein' //g'|  tr ' ' '_')
-    # funtie voor eiwit info.
-    protein_tables $VAR $NAME_protein $discription
-    #
+    # Funtie voor elk eiwit met bijbehorende informatie.    protein_tables $VAR $NAME_protein $discription
+    # Functie voor elk gevonden pathway met bijbehorende informatie
     pathways $VAR
 
     mrna $VAR
@@ -184,6 +181,6 @@ done
 cat mrna_table.txt |sort | uniq >mrna_table_clean.txt
 cat eiwit_tabel.txt |sort | uniq >eiwit_table_clean.txt
 cat ncbi_table.txt | sort -u -t, -k1,1 | uniq >ncbi_table_clean.txt
-cat org_table.txt |sort | uniq >org_table_clean.txt
+# Teslotte verwijdering van alles.cat org_table.txt |sort | uniq >org_table_clean.txt
 rm intro.txt mrna_table.txt eiwit_tabel.txt ncbi_table.txt org_table.txt
 echo done
