@@ -55,7 +55,7 @@ def sort_information(output_folder, input_seq):
                     shell=True)
     subprocess.call("cat info_seq.txt | awk '{ print $3 ,  substr($0,"
                     " index($0,$4))}' > 'eiwitcodes.txt'", shell=True)
-    subprocess.call("bash list_of_genes.sh " + output_folder, shell=True) # TODO move
+    subprocess.call("bash list_of_genes.sh " + output_folder, shell=True)
 
 
 def compress_files(cf_data_list, cf_folder, cf_seq):
@@ -77,7 +77,7 @@ def compress_files(cf_data_list, cf_folder, cf_seq):
                     cf_seq + '_mRNA.txt ', shell=True)
 
 
-def get_online_info(goi_eiwit_lijst, goi_output_folder):
+def get_online_info(goi_protein_list, goi_output_folder):
     """In deze functie wordt informatie van de NCBI database verkregen door
     middel van Bash. Vervolgens wordt alles per sequentie in een bestand
     geplaatst en kan er dus per sequentie informatie uit gehaald worden.
@@ -92,15 +92,15 @@ def get_online_info(goi_eiwit_lijst, goi_output_folder):
      wordt
     er met de functie pathway_info de informatie opgehaald uit KEGG.
 
-    :param goi_eiwit_lijst: Lijst met alle eiwitnamen van uit de BLAST (list).
+    :param goi_protein_list: Lijst met alle eiwitnamen van uit de BLAST (list).
     :param goi_output_folder: De folder waar de output heen moet (str).
     """
 
-    for protien_info in goi_eiwit_lijst:
-        name = protien_info[1][1]
-        seq_name = str(protien_info[0])
+    for protein_info in goi_protein_list:
+        name = protein_info[1][1]
+        seq_name = str(protein_info[0])
         All_seq_info = []
-        All_seq_info.append(protien_info)
+        All_seq_info.append(protein_info)
         run = subprocess.check_output('bash getinfoandid.sh ' + name + ' ' +
                                       goi_output_folder + ' ' + seq_name,
                                       shell=True, stderr=None)
@@ -121,7 +121,7 @@ def get_online_info(goi_eiwit_lijst, goi_output_folder):
             shell=True), 'utf8'), seq_name, goi_output_folder)
 
 
-def return_full_seq(rfs_naam, rfs_protenome_ncbi):
+def return_full_seq(rfs_naam, rfs_proteome_ncbi):
     """Deze functie haalt de hele sequentie uit het bestand rfs_protenome_ncbi.
     txt
     waar het protenoom instaat. Eerst wordt er gebruikmakend van Bash de index
@@ -134,32 +134,32 @@ def return_full_seq(rfs_naam, rfs_protenome_ncbi):
 
     :param rfs_naam: De naam van het eiwit wat gevonden is en
                      de sequentie die nodig is (str).
-    :param rfs_protenome_ncbi:  FASTA bestand met proteoom erin (str)(.fa).
+    :param rfs_proteome_ncbi:  FASTA bestand met proteoom erin (str)(.fa).
     :return: Sequentie van het eiwit wat gevraagd wordt (str).
     """
 
-    all_protiens = []
-    hit_protien_info = str(subprocess.check_output('egrep ' + rfs_naam + ' ' +
-                                                   rfs_protenome_ncbi + '  -n',
+    all_proteins = []
+    hit_protein_info = str(subprocess.check_output('egrep ' + rfs_naam + ' ' +
+                                                   rfs_proteome_ncbi + '  -n',
                                                    shell=True), 'utf8')
-    with open(rfs_protenome_ncbi, 'r') as protien_seq:
-        all_protiens += (protien_seq.readlines())
-        gen_seq_and_info = all_protiens[int(hit_protien_info
+    with open(rfs_proteome_ncbi, 'r') as protein_seq:
+        all_proteins += (protein_seq.readlines())
+        gene_seq_and_info = all_proteins[int(hit_protein_info
                                             .split(':')[0]) - 1]
-        for lines in range(int(hit_protien_info.split(':')[0]),
-                           len(all_protiens)):
-            if all_protiens[lines][0] != '>':
-                gen_seq_and_info += all_protiens[lines]
+        for lines in range(int(hit_protein_info.split(':')[0]),
+                           len(all_proteins)):
+            if all_proteins[lines][0] != '>':
+                gene_seq_and_info += all_proteins[lines]
             else:
-                return gen_seq_and_info
+                return gene_seq_and_info
 
 
-def make_lijst_information_gene(hits_list, protenome_ncbi):  # TODO
+def make_list_information_gene(hits_list, proteome_ncbi):  # TODO
     """ Deze functie maakt een overzichtelijke lijst van de hit samen met
     de volledige sequentie die in het protenoom bestand staat.
     De lijst wordt dan teruggegeven als deze is gevuld.
 
-    :param protenome_ncbi: Het bestand waar het protenoom staat (str)(file).
+    :param proteome_ncbi: Het bestand waar het protenoom staat (str)(file).
     :param hits_list: Lijst met de hits van BLAST (lijst).
     :return: gene_info_list: Lijst met de info van de hits met de sequentie
      er bij.
@@ -169,7 +169,7 @@ def make_lijst_information_gene(hits_list, protenome_ncbi):  # TODO
         gene_info_list.append([hit.split('\t')[0],
                                [hit, hit.split('\t')[1], 'nan',
                                 return_full_seq(hit.split('\t')[1],
-                                                protenome_ncbi)]])
+                                                proteome_ncbi)]])
     return gene_info_list
 
 
@@ -252,19 +252,19 @@ def system_input():
     als een strings en worden gereturned.
 
     :return: si_input_seq : sequentie van de dataset (str)(bestand)(.fa).
-    si_protenome_ncbi: het bestand met het proteoom vanuit NCBI (str)(bestand)
+    si_proteome_ncbi: het bestand met het proteoom vanuit NCBI (str)(bestand)
     (.faa).
     si_output_folder: De folder waar alle bestand terecht komen (str)(folder).
     """
 
     si_input_seq = sys.argv[1]
-    si_protenome_ncbi = sys.argv[2]
+    si_proteome_ncbi = sys.argv[2]
     si_output_folder = sys.argv[3]
     host = sys.argv[4]
     db = sys.argv[5]
     user = sys.argv[6]
     password = sys.argv[7]
-    return si_input_seq, si_protenome_ncbi, si_output_folder, \
+    return si_input_seq, si_proteome_ncbi, si_output_folder, \
            host, db, user, password
 
 
@@ -277,14 +277,14 @@ def main():
     uit de BioServer.
     """
 
-    input_seq, protenome_ncbi, output_folder, host, db, user, password = system_input()
-    print(input_seq, protenome_ncbi, output_folder)
-    make_db(protenome_ncbi)
+    input_seq, proteome_ncbi, output_folder, host, db, user, password = system_input()
+    print(input_seq, proteome_ncbi, output_folder)
+    make_db(proteome_ncbi)
     print('db done')
-    best_ncbi_hits = blast_db_ncbi(input_seq, protenome_ncbi)
+    best_ncbi_hits = blast_db_ncbi(input_seq, proteome_ncbi)
     print('blast done')
-    gene_lijst = make_lijst_information_gene(best_ncbi_hits, protenome_ncbi)
-    get_online_info(gene_lijst, output_folder)
+    gene_list = make_list_information_gene(best_ncbi_hits, proteome_ncbi)
+    get_online_info(gene_list, output_folder)
     sort_information(output_folder, input_seq)
     print("\ndone\n\nFiles Made: \nresult_gen.txt\ninfo_seq.txt\
              \neiwitcodes.txt\nncbi_table.txt\neiwit_tabel.txt\nmrna_table.txt\
