@@ -55,7 +55,7 @@ def sort_information(output_folder, input_seq):
                     shell=True)
     subprocess.call("cat info_seq.txt | awk '{ print $3 ,  substr($0,"
                     " index($0,$4))}' > 'eiwitcodes.txt'", shell=True)
-    subprocess.call("bash list_of_genes.sh " + output_folder, shell=True)
+    subprocess.call("bash list_of_genes.sh " + output_folder, shell=True) # TODO move
 
 
 def compress_files(cf_data_list, cf_folder, cf_seq):

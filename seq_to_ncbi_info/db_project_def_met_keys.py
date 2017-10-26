@@ -209,8 +209,8 @@ def Keys(con, cur):
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uitgevoerd word.
     """
-    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(Ncbi_g_id) REFERENCES Ncbi_Protein(Ncbi_id)")
-    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(ncbi_p_id) REFERENCES Ncbi_gene(ncbi_id)")
+    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(Ncbi_g_id) REFERENCES Ncbi_gene(ncbi_id)")
+    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(ncbi_p_id) REFERENCES  Ncbi_Protein(Ncbi_id)")
     cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(Ncbi_mr_id) REFERENCES Ncbi_Mrna (ncbi_id)")
     cur.execute("ALTER TABLE Ncbi_Protein ADD FOREIGN KEY(ID_Protein) REFERENCES Pathways(ID)")
     cur.execute("ALTER TABLE Ncbi_gene ADD FOREIGN KEY(Ncbi_protein_id) REFERENCES Ncbi_Protein(Ncbi_id)")
@@ -362,8 +362,8 @@ def info_alles(con, cur):
         with open('alles_table_clean.txt', 'w') as outfile:
             for i in a:
                 outfile.write(
-                    i.split(' ')[0].split('/')[1] + '\t' + i.split(' ')[len(i.split(' ')) - 2] + '\t' + i.split(' ')[
-                        2] + '\t' + i.split(' ')[len(i.split(' ')) - 1])
+                    i.split(' ')[0].split('/')[1] +  '\t' + i.split(' ')[
+                        2] +'\t' + i.split(' ')[len(i.split(' ')) - 2] + '\t' + i.split(' ')[len(i.split(' ')) - 1])
 def get_parameters():
     """Deze funcite van de parameer op die worden gegeven. Hiermee kan de db worden gekozen. Ook het wachtwoord gebuiker en de host."""
 
