@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# benodigde variabelen
+# Benodigde variabelen
 place=$1
 orgninele_seqs=$2
 ouptut_folder=$3
 
 
 function  gen_lenght {
-# functie voor het berekenen van de lengte van het gen.
+# Functie voor het berekenen van de lengte van het gen.
 # Na het berekenen worden de gegevens naar het bestand ncbi_table.txt geschreven.
     if [ $(cat $1 | egrep 'from: ' -m1 | wc| awk '{print $2}') == 9 ]
         then
@@ -101,7 +101,7 @@ function protien_tabels {
 
 function pathways {
     # in deze funtie worden de pathwas opgehaald als deze bekend zijn voor het eiwit.
-    #als er geen beken zijn word er niks naar geschreven. 
+    #als er geen beken zijn word er niks naar geschreven.
     #dus ook als het bestand er neit is is dat omdat er geen kegg data is.
     voor='oaa'
     name=$voor$(cat $VAR | grep 'seq_' | awk -F \t '{print $2}' | tr -d '\\')
