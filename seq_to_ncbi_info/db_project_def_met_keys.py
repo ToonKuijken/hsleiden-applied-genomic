@@ -69,7 +69,7 @@ def make_patways_files():
 
 # Begin database setting
 
-def Setup(host='localhost',db='project_perode_1',user='postgres_user',password='password'):
+def Setup(host,db,user,password):
     """Deze functie zorgt ervoor dat er ingelogt kan worden om conectie te maken met de database
        en dat er querry's uitgevoerd kunnen worden via de terminal.
 
@@ -90,7 +90,7 @@ def clean_up_db(con, cur):
        :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
 
-    cur.execute("DROP TABLE IF EXISTS Sequentie_info CASCADE;")
+    cur.execute("DROP TABLE IF EXISTS sequence_info CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Pathways CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Mrna CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Ncbi_gene CASCADE;")
@@ -101,22 +101,22 @@ def clean_up_db(con, cur):
     cur.execute("DROP TABLE IF EXISTS Ncbi_Mrna CASCADE;")
 
 
-def Tabel_info_seq(con, cur):
-    """Het maken van de tabel Sequentie_info. In deze tabel is Seq_id de PRIMARY KEY die refereerd naar tabel
-       Alles en het atribut Seq_id. Deze tabel zal bestaan uit drie kolomen: Seq_id, Orginale_seq en
-       Length. De lengte is een INT en de andere twee een VARCHAR.
+def Table_info_seq(con, cur):
+    """Het maken van de tabel sequence_info. In deze tabel is Seq_id de PRIMARY KEY die refereerd naar tabel
+       Alles en het atribut Seq_id. Deze tabel zal bestaan uit drie kolomen: Seq_id, Original_seq en
+       Length. De Length is een INT en de andere twee een VARCHAR.
 
        :param con: Logt in op postgrespsql
        :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
 
-    cur.execute("""CREATE TABLE Sequentie_info(
+    cur.execute("""CREATE TABLE sequence_info(
         Seq_id VARCHAR(7) PRIMARY KEY REFERENCES Seq_ncbi_combination (Seq_id),
-        Orginale_seq VARCHAR(8000),
+        Original_seq VARCHAR(8000),
         Length INT)""")
 
 
-def Tabel_Pathways(con, cur):
+def Table_Pathways(con, cur):
     """Het maken van de tabel Pathways. In deze tabel is ID de PRIMARY KEY. Deze tabel zal uit vier
        kolomen bestaan: ID als een SERIAL en Id_Pathway, Naam_Pathway, Info als VARCHAR. ID is als
        SERIAl een goede PRIMARY KEY, omdat het steeds een nieuwe en unieke waarde toevoegt.
@@ -132,7 +132,7 @@ def Tabel_Pathways(con, cur):
         Info VARCHAR(500))""")
 
 
-def Tabel_Mrna(con, cur):
+def Table_Mrna(con, cur):
     """Het maken van de tabel Ncbi_Mrna. In deze tabel is ncbi_id de PRIMARY KEY. Hier zullen
        drie kolomen worden gemaakt: ncbi_id en Seq als VARCHAR en Length als INT.
 
@@ -146,10 +146,10 @@ def Tabel_Mrna(con, cur):
         Seq VARCHAR(8000))""")
 
 
-def Tabel_Ncbi_gene(con, cur):
+def Table_Ncbi_gene(con, cur):
     """Het maken van de tabel Ncbi_gene. In deze tabel is NCBI_id_name_gene de PRIMARY KEY. Hier zullen
        acht kolomen worden gemaakt: Ncbi_id als VARCHAR, Naam als VARCHAR, Length als INT,
-       Chromosoom als INT, Locatie als VARCHAR, Seq als VARCHAR, Exonen als INT en tot slot Ncbi_protien_id
+       Chromosoom als INT, Location als VARCHAR, Seq als VARCHAR, Exons als INT en tot slot Ncbi_protien_id
        als VARCHAR.
 
        :param con: Logt in op postgrespsql
@@ -160,14 +160,14 @@ def Tabel_Ncbi_gene(con, cur):
         Ncbi_id VARCHAR(150) PRIMARY KEY,
         Naam VARCHAR (150),
         Length INT,
-        Chromosom INT,
-        Locatie VARCHAR(400),
+        Chromosome INT,
+        Location VARCHAR(400),
         Seq VARCHAR(4000),
-        Exonen INT,
+        Exons INT,
         Ncbi_protein_id VARCHAR(150))""")
 
 
-def Tabel_Alles(con, cur):
+def Table__all(con, cur):
     """Het maken van de tabel Seq_ncbi_combination. In deze tabel is Seq_id de PRIMARY KEY. Hier zullen
        vier kolomen worden gemaakt: Seq_id, Ncbi_p_id, Ncbi_g_id en Ncbi_mr_id allemaal als
        VARCHAR.
@@ -183,10 +183,10 @@ def Tabel_Alles(con, cur):
         Ncbi_mr_id VARCHAR(150))""")
 
 
-def Tabel_Protein(con, cur):
+def Table_Protein(con, cur):
     """Het maken van de tabel Ncbi_Protein. In deze tabel is NCBI_naam_id_Protein de PRIMARY KEY. Hier zullen
-       zes kolomen worden gemaakt: NCBI_naam_id_Protein als VARCHAR, Naam_Protein als VARCHAR, EC_code
-       als VARCHAR, Length_Protein als INT, Orginale_seq_aa als VARCHAR en Pathway als VARCHAR.
+       zes kolomen worden gemaakt: NCBI_naam_id_Protein als VARCHAR, Name_Protein als VARCHAR, EC_code
+       als VARCHAR, Length_Protein als INT, Original_seq_aa als VARCHAR en Pathway als VARCHAR.
 
        :param con: Logt in op postgrespsql
        :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
@@ -194,10 +194,10 @@ def Tabel_Protein(con, cur):
     cur.execute("""CREATE TABLE Ncbi_Protein(
         ID_Protein SERIAL,
         Ncbi_id VARCHAR(150) PRIMARY KEY,
-        Naam_Protein VARCHAR(150),
+        Name_Protein VARCHAR(150),
         EC_code VARCHAR(40),
         Length_Protein INT,
-        Orginale_seq_aa VARCHAR(4000),
+        Original_seq_aa VARCHAR(4000),
         Pathway VARCHAR(50))""")
 
 
@@ -214,6 +214,8 @@ def Keys(con, cur):
     cur.execute("ALTER TABLE Seq_ncbi_combination ADD FOREIGN KEY(Ncbi_mr_id) REFERENCES Ncbi_Mrna (ncbi_id)")
     cur.execute("ALTER TABLE Ncbi_Protein ADD FOREIGN KEY(ID_Protein) REFERENCES Pathways(ID)")
     cur.execute("ALTER TABLE Ncbi_gene ADD FOREIGN KEY(Ncbi_protein_id) REFERENCES Ncbi_Protein(Ncbi_id)")
+    cur.execute("ALTER TABLE sequence_info ADD FOREIGN KEY(Seq_id) REFERENCES Seq_ncbi_combination(Seq_id)")
+
 
 
 def Pathwyay_table(con, cur):
@@ -238,7 +240,7 @@ def Pathwyay_table(con, cur):
     con.commit()
 
 
-def alles_table(con, cur):
+def all_table(con, cur):
     """Deze functie leest de het bestand "alles_table_clean.txt". Uit dit bestand wordt er dankzij een
        for loop de inhoud gelezen en in de juiste kolomen gestopt. De manier waarop de inhoud in de
        juiste kolom terecht komt is door gebruik te maken van tab's ('\t'). In het bestand staat de
@@ -271,7 +273,7 @@ def protien_table(con, cur):
        :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
     protien_table_sql = """
-    INSERT INTO Ncbi_Protein (Ncbi_id, Naam_Protein, EC_code, Length_Protein, Orginale_seq_aa,Pathway)
+    INSERT INTO Ncbi_Protein (Ncbi_id, Name_Protein, EC_code, Length_Protein, Original_seq_aa,Pathway)
     VALUES (%s,%s,%s,%s,%s,%s)"""
     f = open("eiwit_table_clean.txt", "r")
     for line in f.readlines():
@@ -339,7 +341,7 @@ def Info_seq_table(con, cur):
        :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
     org_info_sql = """
-    INSERT INTO Sequentie_info VALUES (%s,%s,%s)"""
+    INSERT INTO sequence_info VALUES (%s,%s,%s)"""
     f = open("org_table_clean.txt", "r")
     for line in f.readlines():
         data = line.strip().split('\t')
@@ -348,7 +350,7 @@ def Info_seq_table(con, cur):
         cur.execute(org_info_sql, tuple(data))
     con.commit()
 
-def info_alles(con, cur):
+def info_all(con, cur):
     """Deze functie maakt het bestand 'alles_table_clean.txt'. Dit wordt gedaan door informatie uit
        het bestand 'info_seq.txt' te halen, doormiddel van een for loop. De informatie wordt in
        vier rijen gescheiden doormiddel van tab's ('\t'). Door tab's toe te voegen is het makkelijker
@@ -391,7 +393,7 @@ def main():
          print('no db values')
          host='localhost'
          db='project'
-         user='postgres'
+         user='root'
          password='password'
          print('using defaults')
 
@@ -401,20 +403,20 @@ def main():
     con.commit()
 
     # Maken van tabellen
-    Tabel_Alles(con, cur)
-    Tabel_info_seq(con, cur)
-    Tabel_Protein(con, cur)
-    Tabel_Pathways(con, cur)
-    Tabel_Mrna(con, cur)
-    Tabel_Ncbi_gene(con, cur)
+    Table__all(con, cur)
+    Table_info_seq(con, cur)
+    Table_Protein(con, cur)
+    Table_Pathways(con, cur)
+    Table_Mrna(con, cur)
+    Table_Ncbi_gene(con, cur)
 
 
     con.commit()
     print("Tabellen zijn gemaakt.")
-    info_alles(con, cur)
+    info_all(con, cur)
     Pathwyay_table(con, cur)
     protien_table(con, cur)
-    alles_table(con, cur)
+    all_table(con, cur)
     Ncbi_gene_table(con,cur)
     Mrna_table(con, cur)
     Info_seq_table(con,cur)
