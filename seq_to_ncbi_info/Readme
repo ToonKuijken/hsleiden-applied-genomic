@@ -1,7 +1,7 @@
-Toepassings instructies:
+Toepassing instructies:
 
 Maak gebruik van python3 in de terminal in Linux.
-Voor vervolgens het commando hieronder in:
+Voer vervolgens het commando hieronder in:
 
 python3 seq_to_ncbi_entry_gen_id.py  seq_a3.fa GCF_000002275.2_Ornithorhynchus_anatinus_5.0.1_protein.faa all_seq_info localhost, project, postgres, password 
 
