@@ -118,7 +118,7 @@ def clean_up_db(con, cur):
 
 
 def Table_info_seq(con, cur):
-    """Het maken van de tabel Sequentie_info. In deze tabel is Seq_id
+    """Het maken van de tabel sequence_info. In deze tabel is Seq_id
      de PRIMARY KEY die refereerd naar tabel
            Alles en het atribut Seq_id. Deze tabel zal bestaan uit drie
             kolomen: Seq_id, Orginale_seq en
@@ -438,7 +438,7 @@ def info_all(con, cur):
 
 
 def get_parameters():
-    """Deze functie zorgt voor de parameters die op worden gegeven. 
+    """Deze functie zorgt voor de parameters die op worden gegeven.
        Hiermee kan de database worden gekozen, het wachtwoord van de
         gebuiker en de user."""
     host = sys.argv[1]
@@ -502,4 +502,3 @@ def main():
 
 
 main()
-
