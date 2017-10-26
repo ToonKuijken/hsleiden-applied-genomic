@@ -75,12 +75,11 @@ def Setup(host='localhost',db='project_perode_1',user='postgres_user',password='
 
        :return: con: Logit in op postgrespsql.
        :return: cur: Zorgt er voor dat de query uit gevoerd word.
-    """
+##    """
     con = None
     con = psycopg2.connect("host='{}' dbname='{}' user='{}' password='{}'".format(host,db,user,password))
     cur = con.cursor()
     return con, cur
-
 
 def clean_up_db(con, cur):
     """Deze fucntie maakt de bestaande tabellen leeg en verbreekt de connectie tussen de tabellen
@@ -210,7 +209,7 @@ def Keys(con, cur):
        :param con: Logit in op postgrespsql
        :param cur: Zorgt er voor dat de query uitgevoerd word.
     """
-    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(Ncbi_g_id) REFERENCES Protein(Ncbi_id)")
+    cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(Ncbi_g_id) REFERENCES Ncbi_Protein(Ncbi_id)")
     cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(ncbi_p_id) REFERENCES Ncbi_gene(ncbi_id)")
     cur.execute("ALTER TABLE Seq_ncbi_combinatie ADD FOREIGN KEY(Ncbi_mr_id) REFERENCES Ncbi_Mrna (ncbi_id)")
     cur.execute("ALTER TABLE Ncbi_Protein ADD FOREIGN KEY(ID_Protein) REFERENCES Pathways(ID)")
