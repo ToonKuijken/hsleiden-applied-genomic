@@ -27,7 +27,7 @@ def clean_make_lists(data):
            te verwijderen. De lijst wordt vervolgens
            als variabele opgeslagen en gereturnd.
            :param data: Dit is de variable 'inhoud_bestand' die wordt
-           doorgeven als de variable naam 'data'.
+           doorgeven als de variable name 'data'.
            :return: new_list: Dit is een lijst met de inhoud die in het
             bestand 'pathway_table.txt' zit.
         """
@@ -136,7 +136,7 @@ def Table_info_seq(con, cur):
 def Table_Pathways(con, cur):
     """Het maken van de tabel Pathways. In deze tabel is ID de PRIMARY
     KEY. Deze tabel zal uit vier
-       kolomen bestaan: ID als een SERIAL en Id_Pathway, Naam_Pathway,
+       kolomen bestaan: ID als een SERIAL en Id_Pathway, name_Pathway,
        Info als VARCHAR. ID is als
        SERIAl een goede PRIMARY KEY, omdat het steeds een nieuwe en
        unieke waarde toevoegt.
@@ -147,7 +147,7 @@ def Table_Pathways(con, cur):
     cur.execute("""CREATE TABLE Pathways(
         ID SERIAL PRIMARY KEY,
         Id_pathway VARCHAR(50) ,
-        Naam_Pathway VARCHAR(50),
+        name_Pathway VARCHAR(50),  #TODO uhm ?
         Info VARCHAR(500))""")
 
 
@@ -169,7 +169,7 @@ def Table_Mrna(con, cur):
 def Table_Ncbi_gene(con, cur):
     """Het maken van de tabel Ncbi_gene. In deze tabel is
     NCBI_id_name_gene de PRIMARY KEY. Hier zullen
-       acht kolomen worden gemaakt: Ncbi_id als VARCHAR, Naam als
+       acht kolomen worden gemaakt: Ncbi_id als VARCHAR, name als
         VARCHAR, Length als INT,
        Chromosoom als INT, Locatie als VARCHAR, Seq als VARCHAR,
        Exonen als INT en tot slot Ncbi_protien_id
@@ -180,7 +180,7 @@ def Table_Ncbi_gene(con, cur):
 
     cur.execute("""CREATE TABLE Ncbi_gene(
         Ncbi_id VARCHAR(150) PRIMARY KEY,
-        Naam VARCHAR (150),
+        Name VARCHAR (150), # TODO aanpassen
         Length INT,
         Chromosome INT,
         Location VARCHAR(400),
@@ -208,9 +208,9 @@ def Table__all(con, cur):
 
 def Table_Protein(con, cur):
     """Het maken van de tabel Ncbi_Protein. In deze tabel is
-    NCBI_naam_id_Protein de PRIMARY KEY. Hier zullen
-        zes kolomen worden gemaakt: NCBI_naam_id_Protein als VARCHAR,
-        Naam_Protein als VARCHAR, EC_code
+    NCBI_name_id_Protein de PRIMARY KEY. Hier zullen
+        zes kolomen worden gemaakt: NCBI_name_id_Protein als VARCHAR,
+        name_Protein als VARCHAR, EC_code
         als VARCHAR, Length_Protein als INT, Orginale_seq_aa als
         VARCHAR en Pathway als VARCHAR.
         :param con: Logt in op postgrespsql
@@ -272,7 +272,7 @@ def Pathwyay_table(con, cur):
        :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
     org_table_sql = """
-        INSERT INTO Pathways (Id_Pathway,Naam_Pathway,Info) VALUES (%s,%s,%s)"""
+        INSERT INTO Pathways (Id_Pathway,name_Pathway,Info) VALUES (%s,%s,%s)"""
 
     f = open("clean_pathway.txt", "r")
     for line in f.readlines():
@@ -411,7 +411,6 @@ def Info_seq_table(con, cur):
     for line in f.readlines():
         data = line.strip().split('\t')
         data = [None if x == 'NONE' else str(x) for x in data]
-
         cur.execute(org_info_sql, tuple(data))
     con.commit()
 
@@ -467,7 +466,7 @@ def main():
         print('no db values')
         host = 'localhost'
         db = 'project'
-        user = 'root'
+        user = 'project'
         password = 'password'
         print('using defaults')
 
