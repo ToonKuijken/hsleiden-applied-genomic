@@ -166,7 +166,8 @@ do
     # Voor elk gen met bijbehorende informatie.
     gene_tables $VAR
     discription=$(cat $VAR | grep seq_ | sed 's/XP/\xx XP/g' | sed 's/\\n/ xx /g'| awk  -F xx '{print $5}'| sed -e 's/'$NAME_protein' //g'|  tr ' ' '_')
-    # Funtie voor elk eiwit met bijbehorende informatie.    protein_tables $VAR $NAME_protein $discription
+    # Funtie voor elk eiwit met bijbehorende informatie.
+    protein_tables $VAR $NAME_protein $discription
     # Functie voor elk gevonden pathway met bijbehorende informatie
     pathways $VAR
 
@@ -181,6 +182,7 @@ done
 cat mrna_table.txt |sort | uniq >mrna_table_clean.txt
 cat eiwit_tabel.txt |sort | uniq >eiwit_table_clean.txt
 cat ncbi_table.txt | sort -u -t, -k1,1 | uniq >ncbi_table_clean.txt
-# Teslotte verwijdering van alles.cat org_table.txt |sort | uniq >org_table_clean.txt
+# Teslotte verwijdering van alles.
+cat org_table.txt |sort | uniq >org_table_clean.txt
 rm intro.txt mrna_table.txt eiwit_tabel.txt ncbi_table.txt org_table.txt
 echo done
