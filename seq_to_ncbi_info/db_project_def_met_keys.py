@@ -471,7 +471,7 @@ def main():
 
     con, cur = Setup(host, db, user, password)
     print("connected")
-    clean_up_db(con, cur)user
+    clean_up_db(con, cur)
     con.commit()
 
     # Maken van tabellen
