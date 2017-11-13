@@ -112,7 +112,6 @@ def clean_up_db(con, cur):
     cur.execute("DROP TABLE IF EXISTS Ncbi_gene CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Seq_ncbi_combination CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Protein CASCADE;")
-    cur.execute("DROP TABLE IF EXISTS Protein CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Ncbi_Protein CASCADE;")
     cur.execute("DROP TABLE IF EXISTS Ncbi_Mrna CASCADE;")
 
@@ -129,7 +128,7 @@ def Table_info_seq(con, cur):
 
     cur.execute("""CREATE TABLE sequence_info(
         Seq_id VARCHAR(7) PRIMARY KEY REFERENCES Seq_ncbi_combination (Seq_id),
-        Original_seq VARCHAR(8000),
+        Org_seq VARCHAR(8000),
         Length INT)""")
 
 
@@ -145,10 +144,10 @@ def Table_Pathways(con, cur):
     """
 
     cur.execute("""CREATE TABLE Pathways(
-        ID SERIAL PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         Id_pathway VARCHAR(50) ,
-        name_Pathway VARCHAR(50),  #TODO uhm ?
-        Info VARCHAR(500))""")
+        Name_Pathway VARCHAR(50), 
+        Info_pathway VARCHAR(500))""")
 
 
 def Table_Mrna(con, cur):
@@ -180,7 +179,7 @@ def Table_Ncbi_gene(con, cur):
 
     cur.execute("""CREATE TABLE Ncbi_gene(
         Ncbi_id VARCHAR(150) PRIMARY KEY,
-        Name VARCHAR (150), # TODO aanpassen
+        Name VARCHAR (150),
         Length INT,
         Chromosome INT,
         Location VARCHAR(400),
@@ -201,8 +200,8 @@ def Table__all(con, cur):
 
     cur.execute("""CREATE TABLE Seq_ncbi_combination(
         Seq_id VARCHAR(7) PRIMARY KEY,
-        Ncbi_g_id VARCHAR(150),
         Ncbi_p_id VARCHAR(150),
+        Ncbi_g_id VARCHAR(150),
         Ncbi_mr_id VARCHAR(150))""")
 
 
@@ -217,11 +216,11 @@ def Table_Protein(con, cur):
         :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
      """
     cur.execute("""CREATE TABLE Ncbi_Protein(
-        ID_Protein SERIAL,
         Ncbi_id VARCHAR(150) PRIMARY KEY,
+        ID_Protein SERIAL,
         Name_Protein VARCHAR(150),
         EC_code VARCHAR(40),
-        Length_Protein INT,
+        Length INT,
         Original_seq_aa VARCHAR(4000),
         Pathway VARCHAR(50))""")
 
@@ -272,7 +271,7 @@ def Pathwyay_table(con, cur):
        :param cur: Zorgt ervoor dat de query uitgevoerd wordt.
     """
     org_table_sql = """
-        INSERT INTO Pathways (Id_Pathway,name_Pathway,Info) VALUES (%s,%s,%s)"""
+        INSERT INTO Pathways (Id_Pathway,name_Pathway,Info_Pathway) VALUES (%s,%s,%s)"""
 
     f = open("clean_pathway.txt", "r")
     for line in f.readlines():
@@ -325,7 +324,7 @@ def protein_table(con, cur):
      """
     protien_table_sql = """
     INSERT INTO Ncbi_Protein (Ncbi_id, Name_Protein, EC_code,
-     Length_Protein, Original_seq_aa,Pathway)
+     Length, Original_seq_aa,Pathway)
     VALUES (%s,%s,%s,%s,%s,%s)"""
     f = open("eiwit_table_clean.txt", "r")
     for line in f.readlines():
@@ -466,13 +465,13 @@ def main():
         print('no db values')
         host = 'localhost'
         db = 'project'
-        user = 'project'
+        user = 'user'
         password = 'password'
         print('using defaults')
 
     con, cur = Setup(host, db, user, password)
     print("connected")
-    clean_up_db(con, cur)
+    clean_up_db(con, cur)user
     con.commit()
 
     # Maken van tabellen
