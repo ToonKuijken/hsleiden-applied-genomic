@@ -324,7 +324,7 @@ def protein_table(con, cur):
      """
     protien_table_sql = """
     INSERT INTO Ncbi_Protein (Ncbi_id, Name_Protein, EC_code,
-     Length, Original_seq_aa,Pathway)
+     Length, originele_seq_aa,Pathway)
     VALUES (%s,%s,%s,%s,%s,%s)"""
     f = open("eiwit_table_clean.txt", "r")
     for line in f.readlines():
