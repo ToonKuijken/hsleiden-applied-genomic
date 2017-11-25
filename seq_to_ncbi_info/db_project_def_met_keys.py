@@ -146,7 +146,7 @@ def Table_Pathways(con, cur):
     cur.execute("""CREATE TABLE Pathways(
         id SERIAL PRIMARY KEY,
         Id_pathway VARCHAR(50) ,
-        Name_Pathway VARCHAR(50), 
+        Name_Pathway VARCHAR(50),
         Info_pathway VARCHAR(500))""")
 
 
@@ -200,8 +200,8 @@ def Table__all(con, cur):
 
     cur.execute("""CREATE TABLE Seq_ncbi_combination(
         Seq_id VARCHAR(7) PRIMARY KEY,
-        Ncbi_p_id VARCHAR(150),
         Ncbi_g_id VARCHAR(150),
+        Ncbi_p_id VARCHAR(150),
         Ncbi_mr_id VARCHAR(150))""")
 
 
@@ -221,7 +221,7 @@ def Table_Protein(con, cur):
         Name_Protein VARCHAR(150),
         EC_code VARCHAR(40),
         Length INT,
-        Original_seq_aa VARCHAR(4000),
+        originele_seq_aa VARCHAR(4000),
         Pathway VARCHAR(50))""")
 
 
