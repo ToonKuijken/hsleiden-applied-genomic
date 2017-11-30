@@ -222,7 +222,7 @@ def Table_Protein(con, cur):
         EC_code VARCHAR(40),
         Length INT,
         originele_seq_aa VARCHAR(4000),
-        Pathway VARCHAR(50))""")
+        Pathways VARCHAR(50))""")
 
 
 def Keys(con, cur):
@@ -324,7 +324,7 @@ def protein_table(con, cur):
      """
     protien_table_sql = """
     INSERT INTO Ncbi_Protein (Ncbi_id, Name_Protein, EC_code,
-     Length, originele_seq_aa,Pathway)
+     Length, originele_seq_aa,Pathways)
     VALUES (%s,%s,%s,%s,%s,%s)"""
     f = open("eiwit_table_clean.txt", "r")
     for line in f.readlines():
